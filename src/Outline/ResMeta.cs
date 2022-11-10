@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvflLibrary.Core
+namespace EvflLibrary.Outline
 {
     public enum ContainerDataType : byte
     {
@@ -25,6 +25,6 @@ namespace EvflLibrary.Core
 
     public class ResMeta
     {
-        internal ResMetaItem ContainerItem;
+        public ResMetaItem ContainerItem;
     }
 }

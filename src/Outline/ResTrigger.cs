@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvflLibrary.Core
+namespace EvflLibrary.Outline
 {
     public enum TriggerType : byte
     {
@@ -13,8 +13,8 @@ namespace EvflLibrary.Core
 
     public class ResTrigger
     {
-        internal ushort ClipIndex;
-        internal TriggerType Type;
-        internal byte Padding;
+        public ushort ClipIndex;
+        public TriggerType Type;
+        public byte Padding;
     }
 }

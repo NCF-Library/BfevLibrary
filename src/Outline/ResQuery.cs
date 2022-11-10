@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvflLibrary.Core
+namespace EvflLibrary.Outline
 {
     public class ResQuery
     {
-        internal string Name;
+        public string Name;
     }
 }

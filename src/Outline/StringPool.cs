@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvflLibrary.Core
+namespace EvflLibrary.Outline
 {
     /// <summary>
     /// <para>The string pool starts with the STR magic and contains 2-byte aligned strings. The magic is not checked at all since strings are directly referred to using pointers.</para>
@@ -12,6 +12,6 @@ namespace EvflLibrary.Core
     /// </summary>
     public class StringPool
     {
-        internal string Magic = "SRC ";
+        public string Magic = "SRC ";
     }
 }

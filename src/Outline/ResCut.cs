@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvflLibrary.Core
+namespace EvflLibrary.Outline
 {
     public class ResCut
     {
-        internal float StartTime;
-        internal uint Unknown;
-        internal string Name;
-        internal ResMeta Parameters;
+        public float StartTime;
+        public uint Unknown;
+        public string Name;
+        public ResMeta Parameters;
     }
 }
