@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvflLibrary.Outline
+namespace EvflLibrary.Core
 {
     public enum ContainerDataType : byte
     {
@@ -23,8 +23,13 @@ namespace EvflLibrary.Outline
         ActorIdentifier,
     }
 
-    public class ResMeta
+    public class Container
     {
-        public ResMetaItem ContainerItem;
+        public ContainerItem Root;
+
+        public Container(BinaryReader reader)
+        {
+            Root = new(reader);
+        }
     }
 }
