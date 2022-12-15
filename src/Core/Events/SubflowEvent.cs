@@ -1,35 +1,37 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class SubflowEvent : Event
+    public class SubflowEvent : Event, IEvflDataBlock
     {
-        public ushort NextEventIndex;
-        public long ContainerPtr;
-        public long FlowchartNamePtr;
-        public long EntryPointNamePtr;
+        public ushort NextEventIndex { get; set; }
+        public Container? Parameters { get; set; }
+        public string FlowchartName { get; set; }
+        public string EntryPointName { get; set; }
 
-        public string FlowchartName;
-        public string EntryPointName;
-
-        public SubflowEvent(BinaryReader reader, Event baseEvent) : base(baseEvent)
+        public SubflowEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
         {
             NextEventIndex = reader.ReadUInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts
-            ContainerPtr = reader.ReadInt64();
-
-            // only for debug
-            FlowchartNamePtr = reader.ReadInt64();
-            EntryPointNamePtr = reader.ReadInt64();
-            reader.BaseStream.Position -= 8 + 8;
-
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             FlowchartName = reader.ReadStringPtr();
             EntryPointName = reader.ReadStringPtr();
+        }
+
+        public new void Write(EvflWriter writer)
+        {
+            base.Write(writer);
+            writer.Write(NextEventIndex);
+            writer.Write((ushort)0);
+            writer.Write((ushort)0);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            writer.WriteStringPtr(FlowchartName);
+            writer.WriteStringPtr(EntryPointName);
+            writer.ReserveBlockWriter("EventArrayDataBlock", () => {
+                insertParamsPtr();
+                Parameters?.Write(writer);
+            });
         }
     }
 }

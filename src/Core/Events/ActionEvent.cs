@@ -1,25 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class ActionEvent : Event
+    public class ActionEvent : Event, IEvflDataBlock
     {
-        public ushort NextEventIndex; // Action: next event index, Switch: number of cases, Fork: number of forks
-        public ushort ActorIndex; // Action & Switch: actor index, Fork: number join event index, Else: unused
-        public ushort ActorActionIndex; // Action: actor action index, Switch: actor query index, Else: unused
-        public long ContainerPtr;
+        public ushort NextEventIndex { get; set; }
+        public ushort ActorIndex { get; set; }
+        public ushort ActorActionIndex { get; set; }
+        public Container? Parameters { get; set; }
 
-        public ActionEvent(BinaryReader reader, Event baseEvent) : base(baseEvent)
+        public ActionEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
         {
             NextEventIndex = reader.ReadUInt16();
             ActorIndex = reader.ReadUInt16();
             ActorActionIndex = reader.ReadUInt16();
-            ContainerPtr = reader.ReadInt64();
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             reader.BaseStream.Position += 8 + 8; // unused pointers
+        }
+
+        public new void Write(EvflWriter writer)
+        {
+            base.Write(writer);
+            writer.Write(NextEventIndex);
+            writer.Write(ActorIndex);
+            writer.Write(ActorActionIndex);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            writer.Write(0L);
+            writer.Write(0L);
+
+            writer.ReserveBlockWriter("EventArrayDataBlock", () => {
+                insertParamsPtr();
+                Parameters?.Write(writer);
+            });
         }
     }
 }
