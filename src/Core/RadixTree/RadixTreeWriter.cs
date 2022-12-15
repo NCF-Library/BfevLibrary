@@ -32,7 +32,7 @@ namespace EvflLibrary.Core
         /// <returns>
         /// The computed radix tree as a <see cref="Dictionary{string, Entry}"/> constructed from the provided <paramref name="keys"/>
         /// </returns>
-        public static Dictionary<string, Entry> ComputeTree(string[] keys) => new RadixTreeWriter(keys).RadixTree;
+        public static Dictionary<string, Entry> ComputeTree(params string[] keys) => new RadixTreeWriter(keys).RadixTree;
 
         public RadixTreeWriter(string[] keys)
         {
@@ -116,7 +116,7 @@ namespace EvflLibrary.Core
 
             InsertEntry(name, entry);
         }
-
+        
         public void InsertEntry(string key, Entry entry)
         {
             entry.Index = RadixTree.Count;

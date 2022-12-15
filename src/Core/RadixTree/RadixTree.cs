@@ -1,41 +1,41 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
-    public class RadixTree<T> : IEvflDataBlock
+    public class RadixTree<T> : Dictionary<string, T>, IEvflDataBlock
     {
-        internal string[] Keys = Array.Empty<string>();
-        internal Dictionary<string, T> Values = new();
+        internal string[] StaticKeys = Array.Empty<string>();
 
-        public int Count => Values.Count;
+        // internal Dictionary<string, T> Values = new();
+        // public int Count => Values.Count;
 
-        public T this[string key] {
-            get => Values[key];
-            set {
-                if (Values.ContainsKey(key)) {
-                    Values[key] = value;
-                }
-                else {
-                    Values.Add(key, value);
-                }
-            }
+        public T this[int index] {
+            get => this[StaticKeys[index]];
         }
 
         public RadixTree() { }
-        public RadixTree(EvflReader reader) => Read(reader);
+        public RadixTree(EvflReader reader, T[]? array = null)
+        {
+            Read(reader);
+
+            if (array != null) {
+                LinkToArray(array);
+            }
+        }
 
         public void LinkToArray(T[] array)
         {
-            if (array.Length != Keys.Length) {
+            if (array.Length != StaticKeys.Length) {
                 throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.", 
-                    new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {Keys.Length}.")
+                    new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {StaticKeys.Length}.")
                 );
             }
 
             try {
                 for (int i = 0; i < array.Length; i++) {
-                    Values.Add(Keys[i], array[i]);
+                    Add(StaticKeys[i], array[i]);
                 }
             } catch { }
         }
@@ -46,10 +46,10 @@ namespace EvflLibrary.Core
             int count = reader.ReadInt32();
             reader.BaseStream.Position += 4 + 2 + 2 + 8; // Root entry
 
-            Keys = new string[count];
+            StaticKeys = new string[count];
             for (int i = 0; i < count; i++) {
                 reader.BaseStream.Position += 4 + 2 + 2;
-                Keys[i] = reader.ReadString();
+                StaticKeys[i] = reader.ReadStringPtr();
             }
 
             return this;
@@ -57,18 +57,7 @@ namespace EvflLibrary.Core
 
         public void Write(EvflWriter writer)
         {
-            string[] keys = Values.Keys.ToArray();
-
-            writer.Write(RadixTreeWriter.Magic.ToCharArray());
-            writer.Write(keys.Length);
-
-            var radixTree = RadixTreeWriter.ComputeTree(keys);
-            foreach ((string name, var entry) in radixTree) {
-                writer.Write(entry.BitIdx);
-                writer.Write((ushort)radixTree[entry.Indices[0].Name].Index);
-                writer.Write((ushort)radixTree[entry.Indices[1].Name].Index);
-                writer.WriteStringPtr(name);
-            }
+            RadixTreeHelper.WriteRadixTree(writer, Keys.ToArray());
         }
     }
 }

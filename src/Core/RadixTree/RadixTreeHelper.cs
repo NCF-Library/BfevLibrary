@@ -1,13 +1,34 @@
-﻿namespace EvflLibrary.Core
+﻿using EvflLibrary.Parsers;
+
+namespace EvflLibrary.Core
 {
-    public class RadixTreeHelper
+    public static class RadixTreeHelper
     {
+        /// <summary>
+        /// Writes a RadixTree from an array of keys without initializing a new <see cref="RadixTree{T}"/>
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="keys"></param>
+        public static void WriteRadixTree(this EvflWriter writer, string[] keys)
+        {
+            writer.Write(RadixTreeWriter.Magic.ToCharArray());
+            writer.Write(keys.Length);
+
+            var radixTree = RadixTreeWriter.ComputeTree(keys);
+            foreach ((string name, var entry) in radixTree) {
+                writer.Write(entry.BitIdx);
+                writer.Write((ushort)radixTree[entry.Indices[0].Name].Index);
+                writer.Write((ushort)radixTree[entry.Indices[1].Name].Index);
+                writer.WriteStringPtr(name);
+            }
+        }
+
         /// <returns>
         /// The next traverse index for the given <paramref name="key"/> and <paramref name="bitIndex"/>
         /// </returns>
         public static int GetNextEntryIndex(string key, int bitIndex)
         {
-            if (key != "" && bitIndex != -1) {
+            if (key != "" && bitIndex != -1 && key.Length > bitIndex >> 3) {
                 return key[^((bitIndex >> 3) + 1)] >> (bitIndex & 0b0000_0111) & 0b0000_0001;
             }
             else {
