@@ -1,60 +1,149 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EvflLibrary.Extensions;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class Actor
+    public class Actor : IEvflDataBlock
     {
-        public string Name;
-        public string SecondaryName;
-        public string ArgumentName;
-        public long ActionsOffset;
-        public long QueriesOffset;
-        public long ParamsOffset;
-        public ushort ActionCount;
-        public ushort QueryCount;
-        public ushort EntryPointIndex; // Entry point index for associated entry point (0xffff if none)
-        public byte CutNumber; // (?) Cut number? This is set to 1 for flowcharts. Timeline actors sometimes use a different value here. In BotW, this value is passed as the @MA actor parameter. https://zeldamods.org/wiki/BFEVFL#Actor
-        
-        public string[] Actions;
-        public string[] Queries;
-        public Container Parameters;
+        internal Action? insertActionsPtr = null;
+        internal Action? insertQueriesPtr = null;
+        internal Action? insertParamsPtr = null;
 
-        public Actor(BinaryReader reader)
+        public string Name { get; set; }
+        public string SecondaryName { get; set; }
+        public string ArgumentName { get; set; }
+        public short EntryPointIndex { get; set; }
+
+        /// <summary>
+        /// <para>(?) Cut number? This is set to 1 for flowcharts. Timeline actors sometimes use a different value here.</para>
+        /// <para>In BotW, this value is passed as the @MA actor parameter. https://zeldamods.org/wiki/BFEVFL#Actor</para>
+        /// </summary>
+        public byte CutNumber { get; set; }
+
+        public List<string> Actions { get; set; }
+        public List<string> Queries { get; set; }
+        public Container Parameters { get; set; }
+
+        public Actor(EvflReader reader)
+        {
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             Name = reader.ReadStringPtr();
             SecondaryName = reader.ReadStringPtr();
             ArgumentName = reader.ReadStringPtr();
-            ActionsOffset = reader.ReadInt64();
-            QueriesOffset = reader.ReadInt64();
-            ParamsOffset = reader.ReadInt64();
-            ActionCount = reader.ReadUInt16();
-            QueryCount = reader.ReadUInt16();
-            EntryPointIndex = reader.ReadUInt16();
+
+            long actionsOffset = reader.ReadInt64();
+            long queriesOffset = reader.ReadInt64();
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader))!;
+            ushort actionCount = reader.ReadUInt16();
+            ushort queryCount = reader.ReadUInt16();
+
+            EntryPointIndex = reader.ReadInt16();
             CutNumber = reader.ReadByte();
+
+            // Padding
             reader.BaseStream.Position += 1;
 
-            Actions = new string[ActionCount];
-            reader.TemporarySeek(ActionsOffset, SeekOrigin.Begin, () => {
-                for (int i = 0; i < ActionCount; i++) {
-                    Actions[i] = reader.ReadStringPtr();
-                }
-            });
+            Actions = new(reader.ReadObjectsPtr(new string[actionCount], reader.ReadStringPtr, actionsOffset));
+            Queries = new(reader.ReadObjectsPtr(new string[queryCount], reader.ReadStringPtr, queriesOffset));
 
-            Queries = new string[QueryCount];
-            reader.TemporarySeek(QueriesOffset, SeekOrigin.Begin, () => {
-                for (int i = 0; i < QueryCount; i++) {
-                    Queries[i] = reader.ReadStringPtr();
-                }
-            });
+            return this;
+        }
 
-            Parameters = reader.TemporarySeek<Container>(ParamsOffset, SeekOrigin.Begin, () => {
-                return new(reader);
+        public void Write(EvflWriter writer)
+        {
+            WriteHeader(writer);
+            writer.ReserveBlockWriter("ActorArrayDataBlock", () => {
+                WriteData(writer);
             });
+        }
+
+        public void WriteHeader(EvflWriter writer)
+        {
+            writer.WriteStringPtr(Name);
+            writer.WriteStringPtr(SecondaryName);
+            writer.WriteStringPtr(ArgumentName);
+
+            CheckAction(ref insertActionsPtr, Actions.Count);
+            CheckAction(ref insertQueriesPtr, Queries.Count);
+            CheckAction(ref insertParamsPtr, Parameters.Count);
+
+            writer.Write((ushort)Actions.Count);
+            writer.Write((ushort)Queries.Count);
+            writer.Write(EntryPointIndex);
+            writer.Write(CutNumber);
+            writer.Write(new byte());
+
+            void CheckAction(ref Action? action, int count)
+            {
+                if (action == null) {
+                    action = writer.ReservePtrIf(count > 0, register: true);
+                }
+                else {
+                    action();
+                }
+            }
+        }
+
+        public void WriteData(EvflWriter writer)
+        {
+            if (Parameters.Count > 0) {
+                writer.Align(8);
+
+                if (insertParamsPtr == null) {
+                    long pos = writer.BaseStream.Position;
+                    insertParamsPtr = () => {
+                        writer.RegisterPtr();
+                        writer.Write(pos);
+                    };
+                }
+                else {
+                    insertParamsPtr();
+                }
+
+                Parameters.Write(writer);
+            }
+
+            if (Actions.Count > 0) {
+                writer.Align(8);
+
+                if (insertActionsPtr == null) {
+                    long pos = writer.BaseStream.Position;
+                    insertActionsPtr = () => {
+                        writer.RegisterPtr();
+                        writer.Write(pos);
+                    };
+                }
+                else {
+                    insertActionsPtr();
+                }
+
+                for (int i = 0; i < Actions.Count; i++) {
+                    writer.WriteStringPtr(Actions[i]);
+                }
+            }
+
+            if (Queries.Count > 0) {
+                writer.Align(8);
+
+                if (insertQueriesPtr == null) {
+                    long pos = writer.BaseStream.Position;
+                    insertQueriesPtr = () => {
+                        writer.RegisterPtr();
+                        writer.Write(pos);
+                    };
+                }
+                else {
+                    insertQueriesPtr();
+                }
+
+                for (int i = 0; i < Queries.Count; i++) {
+                    writer.WriteStringPtr(Queries[i]);
+                }
+            }
         }
     }
 }
