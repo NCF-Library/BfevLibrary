@@ -1,90 +1,154 @@
-﻿using EvflLibrary.Extensions;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EvflLibrary.Core
 {
-    public class EvflBase
+    public class EvflBase : IEvflDataBlock
     {
-        public string Magic = "BFEVFL\x00\x00";
-        public byte VersionMajor;
-        public byte VersionMinor;
-        public byte VersionPatch;
-        public byte VersionSubPatch;
-        public short ByteOrder;
-        public int Alignment;
-        public int FileNameOffset;
-        public ushort IsRelocatedFlag;
-        public ushort FirstBlockOffset;
-        public int RelocationTableOffset;
-        public int FileSize;
-        public ushort FlowChartCount;
-        public ushort TimelineCount;
-        public long FlowchartOffsetPtr;
-        public long FlowchartNameDictionaryOffset;
-        public long TimelineOffsetPtr;
-        public long TimelineNameDictionaryOffset;
+        public const string Magic = "BFEVFL";
 
-        public long FlowchartOffset;
-        public long TimelineOffset;
+        public string FileName { get; set; }
+        public string Version { get; set; }
+        public RadixTree<Flowchart> Flowcharts { get; set; }
+        public RadixTree<Timeline> Timelines { get; set; }
 
-        public RelocationTable RelocationTable;
+        [JsonIgnore]
+        public Flowchart? Flowchart => Flowcharts.Count > 0 ? Flowcharts[0] : null;
 
-        public Flowchart? Flowchart;
-        public ResDic? FlowchartNameDictionary;
-
-        public Timeline? Timeline;
-        public ResDic? TimelineNameDictionary;
+        [JsonIgnore]
+        public Timeline? Timeline => Timelines.Count > 0 ? Timelines[0] : null;
 
         public EvflBase(string file)
         {
             using FileStream fs = File.OpenRead(file);
-            using BinaryReader reader = new(fs);
+            using EvflReader reader = new(fs);
 
-            Magic = new(reader.ReadChars(6));
-            fs.Position += 2; // Padding
-            VersionMajor = reader.ReadByte();
-            VersionMinor = reader.ReadByte();
-            VersionPatch = reader.ReadByte();
-            VersionSubPatch = reader.ReadByte();
-            ByteOrder = reader.ReadInt16();
-            Alignment = 1 << reader.ReadByte();
-            fs.Position += 1; // Padding
-            FileNameOffset = reader.ReadInt32();
-            IsRelocatedFlag = reader.ReadUInt16();
-            FirstBlockOffset = reader.ReadUInt16();
-            RelocationTableOffset = reader.ReadInt32();
-            FileSize = reader.ReadInt32();
-            FlowChartCount = reader.ReadUInt16();
-            TimelineCount = reader.ReadUInt16();
-            fs.Position += 4; // Padding
-            FlowchartOffsetPtr = reader.ReadInt64();
-            FlowchartNameDictionaryOffset = reader.ReadInt64();
-            TimelineOffsetPtr = reader.ReadInt64();
-            TimelineNameDictionaryOffset = reader.ReadInt64();
+            Read(reader);
+        }
 
-            RelocationTable = reader.TemporarySeek<RelocationTable>(RelocationTableOffset, SeekOrigin.Begin, () => new(reader));
+        public IEvflDataBlock Read(EvflReader reader)
+        {
+            // Check the file magic
+            reader.CheckMagic(Magic);
 
-            if (FlowchartOffsetPtr != 0) {
-                FlowchartOffset = reader.TemporarySeek(FlowchartOffsetPtr, SeekOrigin.Begin, () => reader.ReadInt64());
-                FlowchartNameDictionary = reader.TemporarySeek<ResDic>(FlowchartNameDictionaryOffset, SeekOrigin.Begin, () => new(reader));
-                Flowchart = reader.TemporarySeek<Flowchart>(FlowchartOffset, SeekOrigin.Begin, () => new(reader));
+            // Padding
+            reader.BaseStream.Position += 2;
+            
+            // Version (byte[4])
+            Version = string.Join('.', reader.ReadBytes(4));
+            
+            // Byte order (2), alignment (1), padding (1)
+            reader.BaseStream.Position += 4;
+            
+            // FileNameOffset (uint)
+            FileName = reader.ReadStringAtOffset(reader.ReadUInt32() - 2);
+            
+            // IsRelocatedFlag (ushort), FirstBlockOffset (ushort), RelocationTableOffset (uint), FileSize (uint)
+            reader.BaseStream.Position += 12;
+            
+            // FlowchartCount (ushort)
+            var flowcharts = new Flowchart[reader.ReadUInt16()];
+            
+            // TimelineCount (ushort)
+            var timelines = new Timeline[reader.ReadUInt16()];
+            
+            // Padding
+            reader.BaseStream.Position += 4;
+
+            // FlowchartOffsetsPtr (long)
+            reader.ReadObjectOffsetsPtr(flowcharts, () => new(reader));
+
+            // FlowchartNameDictionaryOffset (long)
+            Flowcharts = reader.ReadObjectPtr(() => new RadixTree<Flowchart>(reader, flowcharts))!;
+
+            // TimelineOffsetsPtr (long)
+            reader.ReadObjectOffsetsPtr(timelines, () => new(reader));
+
+            // TimelineNameDictionaryOffset (long)
+            Timelines = reader.ReadObjectPtr(() => new RadixTree<Timeline>(reader, timelines))!;
+
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            // Write the file magic (byte[6]) and padding (byte[2])
+            writer.Write(Magic.AsSpan());
+            writer.Write((ushort)0);
+
+            // Version (byte[4])
+            writer.Write(0x0300);
+
+            // Byte order (2), alignment (1), padding (1)
+            writer.Write((ushort)0xFEFF);
+            writer.Write((byte)3);
+            writer.Write((byte)0);
+
+            // FileNameOffset (uint)
+            writer.WriteStringPtr(FileName);
+
+            // IsRelocatedFlag (ushort), FirstBlockOffset (ushort), RelocationTableOffset (uint), FileSize (uint)
+            writer.Write((ushort)0);
+            Action insertFirstBlockOffset = writer.ReserveOffset(
+                (pos) => writer.Write((ushort)pos), "insertFirstBlockOffset");
+            writer.ReserveOffset("insertRelocationTableOffset");
+            Action insertFileSize = writer.ReserveOffset();
+
+            // FlowchartCount (ushort), TimelineCount (ushort), Padding (uint)
+            writer.Write((ushort)Flowcharts.Count);
+            writer.Write((ushort)Timelines.Count);
+            writer.Write(0U);
+
+            // Flowchart and Timeline block and dict offsets/ptrs
+            Action insertFlowchartOffsetsPtr = writer.ReservePtrIf(Flowcharts.Count > 0, register: true);
+            Action insertFlowchartDicPtr = writer.ReservePtr();
+            Action insertTimelineOffsetsPtr = writer.ReservePtrIf(Timelines.Count > 0, register: true);
+            Action insertTimelineDicPtr = writer.ReservePtr();
+
+            // Insert block offsets
+            insertFlowchartOffsetsPtr();
+            writer.ReservePtrIf(Flowcharts.Count > 0, "insertFlowchartsOffsets", nullPtr: false);
+
+            // Write dictionary
+            insertFlowchartDicPtr();
+            writer.WriteRadixTree(Flowcharts.Keys.ToArray());
+
+            // Insert block offsets
+            insertTimelineOffsetsPtr();
+            writer.ReservePtrIf(Timelines.Count > 0, "insertTimelinesOffsets", nullPtr: false);
+
+            // Write dictionary
+            insertTimelineDicPtr();
+            writer.WriteRadixTree(Timelines.Keys.ToArray());
+
+            // Write Flowcharts
+            foreach ((_, var flowchart) in Flowcharts) {
+                flowchart.Write(writer);
             }
-            else if (TimelineOffsetPtr != 0) {
-                TimelineOffset = reader.TemporarySeek(TimelineOffsetPtr, SeekOrigin.Begin, () => reader.ReadInt64());
-                TimelineNameDictionary = reader.TemporarySeek<ResDic>(TimelineNameDictionaryOffset, SeekOrigin.Begin, () => new(reader));
-                Timeline = reader.TemporarySeek<Timeline>(TimelineOffset, SeekOrigin.Begin, () => new(reader));
+
+            // Write Timelines
+            foreach ((_, var timeline) in Timelines) {
+                timeline.Write(writer);
             }
-            else {
-                throw new NotImplementedException();
-            }
+
+            // Write String Pool
+            writer.WriteStringPool();
+
+            // Write Relocation Table
+            writer.WriteRelocationTable();
+
+            insertFileSize();
         }
     }
 }
