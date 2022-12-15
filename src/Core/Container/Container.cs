@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
@@ -23,13 +20,45 @@ namespace EvflLibrary.Core
         ActorIdentifier,
     }
 
-    public class Container
+    public class Container : RadixTree<ContainerItem>, IEvflDataBlock
     {
-        public ContainerItem Root;
-
-        public Container(BinaryReader reader)
+        public Container(EvflReader reader)
         {
-            Root = new(reader);
+            Read(reader);
+        }
+
+        public new IEvflDataBlock Read(EvflReader reader)
+        {
+            ContainerItem root = new(reader, isRoot: true);
+            StaticKeys = root.Items!.StaticKeys;
+            LinkToArray(reader.ReadObjectOffsetsPtr(new ContainerItem[root.Count], () => new(reader), reader.BaseStream.Position));
+
+            return this;
+        }
+
+        public new void Write(EvflWriter writer)
+        {
+            writer.Write((byte)ContainerDataType.Container);
+            writer.Write(new byte());
+            writer.Write((ushort)Count);
+            writer.Write(0U);
+            Action insertDicPtr = writer.ReservePtr();
+            List<Action> insertItemsPtrs = new();
+
+            for (int i = 0; i < Values.Count; i++) {
+                insertItemsPtrs.Add(writer.ReservePtr());
+            }
+
+            insertDicPtr();
+            writer.WriteRadixTree(Keys.ToArray());
+
+            int idx = 0;
+            foreach (var item in Values) {
+                writer.Align(8);
+                insertItemsPtrs[idx].Invoke();
+                item.Write(writer);
+                idx++;
+            }
         }
     }
 }

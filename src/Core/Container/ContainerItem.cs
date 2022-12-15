@@ -1,34 +1,54 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
-    public class ContainerItem
+    public class ContainerItem : ContainerData, IEvflDataBlock
     {
-        public ContainerDataType DataType;
-        public ushort ItemCount;
-        public long DictionaryOffset;
-        public ContainerData Data;
+        internal readonly bool IsRoot = false;
+        internal ushort Count;
 
-        public ResDic? Dictionary;
+        [JsonIgnore]
+        public ContainerDataType DataType { get; set; }
 
-        public ContainerItem(BinaryReader reader)
+        public ContainerItem(EvflReader reader, bool isRoot = false)
+        {
+            IsRoot = isRoot;
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             DataType = (ContainerDataType)reader.ReadByte();
             reader.BaseStream.Position += 1;
-            ItemCount = reader.ReadUInt16();
-            reader.BaseStream.Position += 4;
-            DictionaryOffset = reader.ReadInt64();
 
+            Count = reader.ReadUInt16();
+            reader.BaseStream.Position += 4;
+
+            long dictionaryOffset = reader.ReadInt64();
             if (DataType == ContainerDataType.Container) {
-                Dictionary = reader.TemporarySeek<ResDic>(DictionaryOffset, SeekOrigin.Begin, () => new(reader));
+                Items = reader.ReadObjectPtr<RadixTree<ContainerItem>>(() => new(reader), dictionaryOffset);
             }
 
-            Data = new(reader, ItemCount, DataType);
+            if (!IsRoot) {
+                // Let the parent (root) handle loading
+                ReadData(reader, Count, DataType);
+            }
+
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            writer.Write((byte)DataType);
+            writer.Write(new byte());
+
+            ContainerDataType type = GetDataType();
+            writer.Write((ushort)GetCount(type));
+            writer.Write(0U);
+            writer.Write(type == ContainerDataType.Container ? writer.BaseStream.Position + 8 : 0L);
+            WriteData(writer);
         }
     }
 }

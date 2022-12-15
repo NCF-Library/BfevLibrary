@@ -1,16 +1,11 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
     public class ContainerData
     {
         public string? Argument { get; set; }
-        public ContainerItem[]? Container { get; set; }
+        public RadixTree<ContainerItem>? Items { get; set; }
         public int? Int { get; set; }
         public bool? Bool { get; set; } // 0x80000001 if true, 0x00000000 otherwise
         public float? Float { get; set; }
@@ -23,16 +18,14 @@ namespace EvflLibrary.Core
         public string[]? WStringArray { get; set; }
         public Tuple<string, string>? ActorIdentifier { get; set; }
 
-        public ContainerData(BinaryReader reader, ushort count, ContainerDataType type)
+        public ContainerData() { }
+        public void ReadData(EvflReader reader, ushort count, ContainerDataType type)
         {
             if (type == ContainerDataType.Argument) {
-                Argument = reader.ReadStringPtr(); // Pascal string or 4-byte long string?? 
+                Argument = reader.ReadStringPtr();
             }
             else if (type == ContainerDataType.Container) {
-                Container = new ContainerItem[count];
-                for (int i = 0; i < count; i++) {
-                    Container[i] = reader.TemporarySeek<ContainerItem>(reader.ReadInt64(), SeekOrigin.Begin, () => new(reader));
-                }
+                Items!.LinkToArray(reader.ReadObjectOffsetsPtr(new ContainerItem[count], () => new(reader)));
             }
             else if (type == ContainerDataType.Int) {
                 Int = reader.ReadInt32();
@@ -81,6 +74,124 @@ namespace EvflLibrary.Core
             }
             else if (type == ContainerDataType.ActorIdentifier) {
                 ActorIdentifier = new(reader.ReadStringPtr(), reader.ReadStringPtr());
+            }
+        }
+
+        public void WriteData(EvflWriter writer)
+        {
+            if (Argument != null) {
+                writer.WriteInlineStringPtrs(2, Argument);
+            }
+            else if (Items != null) {
+                Items.Write(writer); // <- Write RadixTree, not items array
+                foreach (var item in Items.Values) {
+                    item.Write(writer);
+                }
+            }
+            else if (Int != null) {
+                writer.Write((int)Int);
+            }
+            else if (Bool != null) {
+                writer.Write((bool)Bool ? 0x80000001 : 0x00000000);
+            }
+            else if (Float != null) {
+                writer.Write((float)Float);
+            }
+            else if (String != null) {
+                writer.WriteInlineStringPtrs(2, String);
+            }
+            else if (WString != null) {
+                writer.WriteInlineStringPtrs(2, WString);
+            }
+            else if (IntArray != null) {
+                for (int i = 0; i < IntArray.Length; i++) {
+                    writer.Write(IntArray[i]);
+                }
+            }
+            else if (BoolArray != null) {
+                for (int i = 0; i < BoolArray.Length; i++) {
+                    writer.Write(BoolArray[i] ? 0x80000001 : 0x00000000);
+                }
+            }
+            else if (FloatArray != null) {
+                for (int i = 0; i < FloatArray.Length; i++) {
+                    writer.Write(FloatArray[i]);
+                }
+            }
+            else if (StringArray != null) {
+                writer.WriteInlineStringPtrs(8, StringArray);
+            }
+            else if (WStringArray != null) {
+                writer.WriteInlineStringPtrs(8, WStringArray);
+            }
+            else if (ActorIdentifier != null) {
+                writer.WriteInlineStringPtrs(2, ActorIdentifier.Item1, ActorIdentifier.Item2);
+            }
+        }
+
+        public int GetCount(ContainerDataType type)
+        {
+            return type switch {
+                ContainerDataType.Argument => 1,
+                ContainerDataType.Container => Items!.Count,
+                ContainerDataType.Int => 1,
+                ContainerDataType.Bool => 1,
+                ContainerDataType.Float => 1,
+                ContainerDataType.String => 1,
+                ContainerDataType.WString => 1,
+                ContainerDataType.IntArray => IntArray!.Length,
+                ContainerDataType.BoolArray=> BoolArray!.Length,
+                ContainerDataType.FloatArray => FloatArray!.Length,
+                ContainerDataType.StringArray => StringArray!.Length,
+                ContainerDataType.WStringArray => WStringArray!.Length,
+                ContainerDataType.ActorIdentifier => 2,
+                _ => throw new NotImplementedException()
+            };
+        }
+
+        public ContainerDataType GetDataType()
+        {
+            if (Argument != null) {
+                return ContainerDataType.Argument;
+            }
+            else if (Items != null) {
+                return ContainerDataType.Container;
+            }
+            else if (Int != null) {
+                return ContainerDataType.Int;
+            }
+            else if (Bool != null) {
+                return ContainerDataType.Bool;
+            }
+            else if (Float != null) {
+                return ContainerDataType.Float;
+            }
+            else if (String != null) {
+                return ContainerDataType.String;
+            }
+            else if (WString != null) {
+                return ContainerDataType.WString;
+            }
+            else if (IntArray != null) {
+                return ContainerDataType.IntArray;
+            }
+            else if (BoolArray != null) {
+                return ContainerDataType.BoolArray;
+            }
+            else if (FloatArray != null) {
+                return ContainerDataType.FloatArray;
+            }
+            else if (StringArray != null) {
+                return ContainerDataType.StringArray;
+            }
+            else if (WStringArray != null) {
+                return ContainerDataType.WStringArray;
+            }
+            else if (ActorIdentifier != null) {
+                return ContainerDataType.ActorIdentifier;
+            }
+            else {
+                throw new NotImplementedException();
             }
         }
     }
