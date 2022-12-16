@@ -201,7 +201,7 @@ namespace EvflLibrary.Parsers
             foreach (string str in strings) {
                 // Strings aligned to 2 aren't aligned
                 // until after the first string
-                if (alignment == 2 && str == strings[0]) {
+                if (alignment == 2 && str != strings[0]) {
                     Align(alignment);
                 }
                 ptrs[str].Invoke();
