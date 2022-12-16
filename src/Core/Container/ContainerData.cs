@@ -83,7 +83,7 @@ namespace EvflLibrary.Core
                 writer.WriteInlineStringPtrs(2, Argument);
             }
             else if (Items != null) {
-                Items.Write(writer); // <- Write RadixTree, not items array
+                Items.Write(writer); // This writes a RadixTree, not the items array
                 foreach (var item in Items.Values) {
                     item.Write(writer);
                 }
