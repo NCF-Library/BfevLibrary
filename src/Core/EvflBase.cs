@@ -19,7 +19,7 @@ namespace EvflLibrary.Core
         public const string Magic = "BFEVFL";
 
         public string FileName { get; set; }
-        public string Version { get; set; }
+        public string Version { get; set; } = "0.3.0.0";
         public RadixTree<Flowchart> Flowcharts { get; set; }
         public RadixTree<Timeline> Timelines { get; set; }
 
@@ -88,7 +88,7 @@ namespace EvflLibrary.Core
             writer.Write((ushort)0);
 
             // Version (byte[4])
-            writer.Write(0x0300);
+            writer.Write(Version.Split('.').Select(x => (byte)int.Parse(x)).ToArray());
 
             // Byte order (2), alignment (1), padding (1)
             writer.Write((ushort)0xFEFF);
