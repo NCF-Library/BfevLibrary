@@ -1,4 +1,6 @@
-﻿namespace EvflLibrary.Parsers
+﻿using System.Text;
+
+namespace EvflLibrary.Parsers
 {
     public class EvflReader : BinaryReader
     {
@@ -62,7 +64,7 @@
         {
             return new(TemporarySeek(ReadInt64(), SeekOrigin.Begin, () => {
                 ushort size = ReadUInt16();
-                return ReadChars(size);
+                return Encoding.UTF8.GetString(ReadBytes(size));
             }));
         }
 
@@ -70,7 +72,7 @@
         {
             return new(TemporarySeek(offset, SeekOrigin.Begin, () => {
                 ushort size = ReadUInt16();
-                return ReadChars(size);
+                return Encoding.UTF8.GetString(ReadBytes(size));
             }));
         }
 

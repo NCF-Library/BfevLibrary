@@ -211,8 +211,9 @@ namespace EvflLibrary.Parsers
 
         public void WritePascalString(string str)
         {
-            Write((ushort)str.Length);
-            Write(str.AsSpan());
+            byte[] data = Encoding.UTF8.GetBytes(str);
+            Write((ushort)data.Length);
+            Write(data);
             Write('\x00');
         }
 
