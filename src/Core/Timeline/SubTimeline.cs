@@ -1,19 +1,26 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class SubTimeline
+    public class SubTimeline : IEvflDataBlock
     {
         public string Name;
 
-        public SubTimeline(BinaryReader reader)
+        public SubTimeline(EvflReader reader)
+        {
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             Name = reader.ReadStringPtr();
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            writer.WriteStringPtr(Name);
         }
     }
 }

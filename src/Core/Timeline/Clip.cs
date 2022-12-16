@@ -1,28 +1,49 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class Clip
+    public class Clip : IEvflDataBlock
     {
-        public float StartTime;
-        public float Duration;
-        public ushort ActorIndex;
-        public ushort ActorActionIndex;
-        public Container Parameters;
+        public float StartTime { get; set; }
+        public float Duration { get; set; }
+        public short ActorIndex { get; set; }
+        public short ActorActionIndex { get; set; }
+        public byte Unknown { get; set; }
+        public Container? Parameters { get; set; }
 
-        public Clip(BinaryReader reader)
+        public Clip(EvflReader reader)
+        {
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             StartTime = reader.ReadSingle();
             Duration = reader.ReadSingle();
-            ActorIndex = reader.ReadUInt16();
-            ActorActionIndex = reader.ReadUInt16();
-            reader.BaseStream.Position += 1 + 3; // unknown + padding
-            Parameters = reader.TemporarySeek<Container>(reader.ReadInt64(), SeekOrigin.Begin, () => new(reader));
+            ActorIndex = reader.ReadInt16();
+            ActorActionIndex = reader.ReadInt16();
+            Unknown = reader.ReadByte();
+            reader.BaseStream.Position += 3; // Padding
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
+
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            writer.Write(StartTime);
+            writer.Write(Duration);
+            writer.Write(ActorIndex);
+            writer.Write(ActorActionIndex);
+            writer.Write(Unknown);
+            writer.Seek(3, SeekOrigin.Current); // Padding (byte[3])
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+
+            writer.ReserveBlockWriter("ClipArrayDataBlock", () => {
+                insertParamsPtr();
+                Parameters?.Write(writer);
+            });
         }
     }
 }

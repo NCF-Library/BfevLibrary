@@ -1,25 +1,40 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class Cut
+    public class Cut : IEvflDataBlock
     {
-        public float StartTime;
-        public uint Unknown;
-        public string Name;
-        public Container Parameters;
+        public float StartTime { get; set; }
+        public string Name { get; set; }
+        public Container? Parameters { get; set; }
 
-        public Cut(BinaryReader reader)
+        public Cut(EvflReader reader)
+        {
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             StartTime = reader.ReadSingle();
-            reader.BaseStream.Position += 4; // unknown
+            reader.BaseStream.Position += 4; // Unknown/Padding (uint)
             Name = reader.ReadStringPtr();
-            Parameters = reader.TemporarySeek<Container>(reader.ReadInt64(), SeekOrigin.Begin, () => new(reader));
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
+
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            writer.Write(StartTime);
+            writer.Seek(4, SeekOrigin.Current); // Unknown/Padding (uint)
+            writer.WriteStringPtr(Name);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+
+            writer.ReserveBlockWriter("CutArrayDataBlock", () => {
+                insertParamsPtr();
+                Parameters?.Write(writer);
+            });
         }
     }
 }

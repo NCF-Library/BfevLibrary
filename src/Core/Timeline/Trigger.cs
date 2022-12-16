@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
@@ -11,16 +8,30 @@ namespace EvflLibrary.Core
         Enter = 1, Leave = 2
     }
 
-    public class Trigger
+    public class Trigger : IEvflDataBlock
     {
-        public ushort ClipIndex;
-        public TriggerType Type;
+        public ushort ClipIndex { get; set; }
+        public TriggerType Type { get; set; }
 
-        public Trigger(BinaryReader reader)
+        public Trigger(EvflReader reader)
+        {
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             ClipIndex = reader.ReadUInt16();
             Type = (TriggerType)reader.ReadByte();
-            reader.BaseStream.Position += 1; // padding
+            reader.BaseStream.Position += 1; // Padding (byte)
+
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            writer.Write(ClipIndex);
+            writer.Write((byte)Type);
+            writer.Seek(1, SeekOrigin.Current);
         }
     }
 }

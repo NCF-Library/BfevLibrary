@@ -1,26 +1,43 @@
-﻿using EvflLibrary.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EvflLibrary.Common;
+using EvflLibrary.Parsers;
 
 namespace EvflLibrary.Core
 {
-    public class Oneshot
+    public class Oneshot : IEvflDataBlock
     {
-        public float Time;
-        public ushort ActorIndex;
-        public ushort ActorActionIndex;
-        public Container Parameters;
+        public float Time { get; set; }
+        public short ActorIndex { get; set; }
+        public short ActorActionIndex { get; set; }
+        public Container? Parameters { get; set; }
 
-        public Oneshot(BinaryReader reader)
+        public Oneshot(EvflReader reader)
+        {
+            Read(reader);
+        }
+
+        public IEvflDataBlock Read(EvflReader reader)
         {
             Time = reader.ReadSingle();
-            ActorIndex = reader.ReadUInt16();
-            ActorActionIndex = reader.ReadUInt16();
-            reader.BaseStream.Position += 8; // padding
-            Parameters = reader.TemporarySeek<Container>(reader.ReadInt64(), SeekOrigin.Begin, () => new(reader));
+            ActorIndex = reader.ReadInt16();
+            ActorActionIndex = reader.ReadInt16();
+            reader.BaseStream.Position += 4 + 4; // Padding (uint), Padding (uint)
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
+
+            return this;
+        }
+
+        public void Write(EvflWriter writer)
+        {
+            writer.Write(Time);
+            writer.Write(ActorIndex);
+            writer.Write(ActorActionIndex);
+            writer.Seek(4 + 4, SeekOrigin.Current); // Padding (uint), Padding (uint)
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+
+            writer.ReserveBlockWriter("OneshotArrayDataBlock", () => {
+                insertParamsPtr();
+                Parameters?.Write(writer);
+            });
         }
     }
 }
