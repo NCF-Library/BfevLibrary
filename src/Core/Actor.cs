@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using Microsoft.Win32;
 
 namespace EvflLibrary.Core
 {
@@ -22,7 +23,7 @@ namespace EvflLibrary.Core
 
         public List<string> Actions { get; set; }
         public List<string> Queries { get; set; }
-        public Container Parameters { get; set; }
+        public Container? Parameters { get; set; }
 
         public Actor(EvflReader reader)
         {
@@ -37,7 +38,7 @@ namespace EvflLibrary.Core
 
             long actionsOffset = reader.ReadInt64();
             long queriesOffset = reader.ReadInt64();
-            Parameters = reader.ReadObjectPtr<Container>(() => new(reader))!;
+            Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             ushort actionCount = reader.ReadUInt16();
             ushort queryCount = reader.ReadUInt16();
 
@@ -67,9 +68,9 @@ namespace EvflLibrary.Core
             writer.WriteStringPtr(SecondaryName);
             writer.WriteStringPtr(ArgumentName);
 
-            CheckAction(ref insertActionsPtr, Actions.Count);
-            CheckAction(ref insertQueriesPtr, Queries.Count);
-            CheckAction(ref insertParamsPtr, Parameters.Count);
+            CheckAction(ref insertActionsPtr, Actions.Count, register: true);
+            CheckAction(ref insertQueriesPtr, Queries.Count, register: true);
+            CheckAction(ref insertParamsPtr, Parameters?.Count ?? 0, register: false);
 
             writer.Write((ushort)Actions.Count);
             writer.Write((ushort)Queries.Count);
@@ -77,10 +78,10 @@ namespace EvflLibrary.Core
             writer.Write(CutNumber);
             writer.Write(new byte());
 
-            void CheckAction(ref Action? action, int count)
+            void CheckAction(ref Action? action, int count, bool register)
             {
                 if (action == null) {
-                    action = writer.ReservePtrIf(count > 0, register: true);
+                    action = writer.ReservePtrIf(count > 0, register: register);
                 }
                 else {
                     action();
@@ -90,7 +91,7 @@ namespace EvflLibrary.Core
 
         public void WriteData(EvflWriter writer)
         {
-            if (Parameters.Count > 0) {
+            if ((Parameters?.Count ?? 0) > 0) {
                 writer.Align(8);
 
                 if (insertParamsPtr == null) {
@@ -104,7 +105,7 @@ namespace EvflLibrary.Core
                     insertParamsPtr();
                 }
 
-                Parameters.Write(writer);
+                Parameters!.Write(writer);
             }
 
             if (Actions.Count > 0) {
