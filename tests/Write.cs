@@ -12,20 +12,20 @@ namespace Tests
         [TestMethod]
         public void WriteEvFl()
         {
-            EvflBase evfl = new(".\\Data\\100enemy.bfevfl");
+            EvflBase evfl = new(".\\Data\\NPC_artist_000.bfevfl");
 
-            using FileStream fs = File.Create(".\\Data\\WRITE_100enemy.bfevfl");
+            using FileStream fs = File.Create(".\\Data\\WRITE_NPC_artist_000.bfevfl");
             using EvflWriter writer = new(fs);
             evfl.Write(writer);
             fs.Dispose();
 
-            EvflBase reEvfl = new(".\\Data\\WRITE_100enemy.bfevfl");
+            EvflBase reEvfl = new(".\\Data\\WRITE_NPC_artist_000.bfevfl");
             string serialized = JsonSerializer.Serialize(reEvfl, new JsonSerializerOptions() {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             });
             Debug.WriteLine(serialized);
-            File.WriteAllText(".\\Data\\WRITE_100enemy.json", serialized);
+            File.WriteAllText(".\\Data\\WRITE_NPC_artist_000.json", serialized);
         }
 
         [TestMethod]
