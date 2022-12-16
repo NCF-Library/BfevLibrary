@@ -33,7 +33,7 @@ namespace Tests
         {
             EvflBase evtm = new(".\\Data\\Demo161_0.bfevtm");
 
-            using FileStream fs = File.OpenWrite(".\\Data\\WRITE_Demo161_0.bfevtm");
+            using FileStream fs = File.Create(".\\Data\\WRITE_Demo161_0.bfevtm");
             using EvflWriter writer = new(fs);
             evtm.Write(writer);
             fs.Dispose();
