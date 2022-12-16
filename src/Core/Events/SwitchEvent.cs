@@ -33,7 +33,7 @@ namespace EvflLibrary.Core
             writer.Write((ushort)SwitchCases.Count);
             writer.Write(ActorIndex);
             writer.Write(ActorQueryIndex);
-            Action insertContainerPtr = writer.ReservePtrIf(Parameters != null);
+            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
             Action insertSwitchCasesPtr = writer.ReservePtrIf(SwitchCases.Count > 0, register: true);
             writer.Write(0L);
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {
@@ -49,7 +49,7 @@ namespace EvflLibrary.Core
                     }
                 }
 
-                insertContainerPtr();
+                insertParamsPtr();
                 Parameters?.Write(writer);
             });
         }

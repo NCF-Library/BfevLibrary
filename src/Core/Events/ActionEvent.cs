@@ -25,7 +25,7 @@ namespace EvflLibrary.Core
             writer.Write(NextEventIndex);
             writer.Write(ActorIndex);
             writer.Write(ActorActionIndex);
-            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
             writer.Write(0L);
             writer.Write(0L);
 

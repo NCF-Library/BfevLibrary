@@ -32,7 +32,7 @@ namespace EvflLibrary.Core
             writer.Write(ActorIndex);
             writer.Write(ActorActionIndex);
             writer.Seek(4 + 4, SeekOrigin.Current); // Padding (uint), Padding (uint)
-            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
 
             writer.ReserveBlockWriter("OneshotArrayDataBlock", () => {
                 insertParamsPtr();

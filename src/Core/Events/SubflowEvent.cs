@@ -25,7 +25,7 @@ namespace EvflLibrary.Core
             writer.Write(NextEventIndex);
             writer.Write((ushort)0);
             writer.Write((ushort)0);
-            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
             writer.WriteStringPtr(FlowchartName);
             writer.WriteStringPtr(EntryPointName);
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {

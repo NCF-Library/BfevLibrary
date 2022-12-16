@@ -38,7 +38,7 @@ namespace EvflLibrary.Core
             writer.Write(ActorActionIndex);
             writer.Write(Unknown);
             writer.Seek(3, SeekOrigin.Current); // Padding (byte[3])
-            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
 
             writer.ReserveBlockWriter("ClipArrayDataBlock", () => {
                 insertParamsPtr();

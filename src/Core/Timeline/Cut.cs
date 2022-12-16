@@ -29,7 +29,7 @@ namespace EvflLibrary.Core
             writer.Write(StartTime);
             writer.Seek(4, SeekOrigin.Current); // Unknown/Padding (uint)
             writer.WriteStringPtr(Name);
-            Action insertParamsPtr = writer.ReservePtrIf(Parameters != null);
+            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
 
             writer.ReserveBlockWriter("CutArrayDataBlock", () => {
                 insertParamsPtr();
