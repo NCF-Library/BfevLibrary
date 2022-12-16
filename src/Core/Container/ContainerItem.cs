@@ -47,13 +47,7 @@ namespace EvflLibrary.Core
             ContainerDataType type = GetDataType();
             writer.Write((ushort)GetCount(type));
             writer.Write(0U);
-            if (type == ContainerDataType.Container) {
-                writer.RegisterPtr();
-                writer.Write(writer.BaseStream.Position + 8);
-            }
-            else {
-                writer.Write(0L);
-            }
+            writer.Write(0L);
             WriteData(writer);
         }
     }
