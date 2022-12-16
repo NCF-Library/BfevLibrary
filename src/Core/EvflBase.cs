@@ -37,6 +37,26 @@ namespace EvflLibrary.Core
             Read(reader);
         }
 
+        public EvflBase(byte[] data)
+        {
+            using MemoryStream ms = new(data);
+            using EvflReader reader = new(ms);
+
+            Read(reader);
+        }
+
+        public EvflBase(Stream stream)
+        {
+            using EvflReader reader = new(stream);
+            Read(reader);
+        }
+
+        public EvflBase()
+        {
+            Flowcharts = new();
+            Timelines = new();
+        }
+
         public IEvflDataBlock Read(EvflReader reader)
         {
             // Check the file magic
