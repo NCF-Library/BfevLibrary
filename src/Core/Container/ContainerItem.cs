@@ -18,20 +18,20 @@ namespace EvflLibrary.Core
 
         public IEvflDataBlock Read(EvflReader reader)
         {
-            DataType = (ContainerDataType)reader.ReadByte();
+            ContainerDataType dataType = (ContainerDataType)reader.ReadByte();
             reader.BaseStream.Position += 1;
 
             Count = reader.ReadUInt16();
             reader.BaseStream.Position += 4;
 
             long dictionaryOffset = reader.ReadInt64();
-            if (DataType == ContainerDataType.Container) {
+            if (dataType == ContainerDataType.Container) {
                 Items = reader.ReadObjectPtr<RadixTree<ContainerItem>>(() => new(reader), dictionaryOffset);
             }
 
             if (!IsRoot) {
                 // Let the parent (root) handle loading
-                ReadData(reader, Count, DataType);
+                ReadData(reader, Count, dataType);
             }
 
             return this;
@@ -39,10 +39,11 @@ namespace EvflLibrary.Core
 
         public void Write(EvflWriter writer)
         {
-            writer.Write((byte)DataType);
+            ContainerDataType type = GetDataType();
+
+            writer.Write((byte)type);
             writer.Write(new byte());
 
-            ContainerDataType type = GetDataType();
             writer.Write((ushort)GetCount(type));
             writer.Write(0U);
             writer.Write(0L);
