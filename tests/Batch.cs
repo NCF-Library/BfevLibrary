@@ -5,6 +5,7 @@ using Nintendo.Yaz0;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tests.Exceptions;
 
 namespace Tests
 {
@@ -31,7 +32,7 @@ namespace Tests
             }
 
             Debug.WriteLine(count);
-            File.WriteAllText("D:\\Bin\\BfevBenchmarks.json", JsonSerializer.Serialize(benchmark));
+            File.WriteAllText("D:\\Bin\\BfevBenchmarks.json", JsonSerializer.Serialize(benchmark, new JsonSerializerOptions() { WriteIndented = true }));
         }
 
         public static Dictionary<string, long> CheckEventFile(byte[] data)
@@ -49,24 +50,40 @@ namespace Tests
             EvflBase bfev = new(data);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Read {data.Length}", mark);
+            watch.Restart();
 
             string serialized = JsonSerializer.Serialize(bfev, options);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Serialize {data.Length}", mark);
+            watch.Restart();
 
-            // EvflBase deserialized = JsonSerializer.Deserialize<EvflBase>(serialized, options)!;
-            // Assert.IsNotNull(deserialized);
+            EvflBase deserialized = JsonSerializer.Deserialize<EvflBase>(serialized, options)!;
+            mark = watch.ElapsedMilliseconds;
+            timestamps.Add($"Deserialized {data.Length}", mark);
+            watch.Restart();
 
             using MemoryStream ms = new();
             using EvflWriter writer = new(ms);
-            bfev.Write(writer);
+            deserialized.Write(writer);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Write {data.Length}", mark);
+            watch.Restart();
 
             mark = watch.ElapsedMilliseconds;
-            timestamps.Add($"Completed {data.Length}", mark);
+            timestamps.Add($"Completed {data.Length}", timestamps.Values.Sum());
 
-            Assert.IsTrue(Enumerable.SequenceEqual(data, ms.ToArray()));
+            byte[] newData = ms.ToArray();
+            if (!Enumerable.SequenceEqual(data, newData)) {
+                throw new BadEvflException() {
+                    GoodBinary = data,
+                    GoodMemory = bfev,
+                    GoodSerialized = serialized,
+                    BadBinary = newData,
+                    BadMemory = deserialized,
+                    BadSerialized = JsonSerializer.Serialize(deserialized, options)
+                };
+            }
+
             return timestamps;
         }
     }
