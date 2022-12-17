@@ -1,16 +1,16 @@
-﻿using EvflLibrary.Common;
+﻿using BfevLibrary.Common;
 using System.Text;
 
-namespace EvflLibrary.Parsers
+namespace BfevLibrary.Parsers
 {
-    public class EvflWriter : BinaryWriter
+    public class BfevWriter : BinaryWriter
     {
         public List<long> Pointers { get; set; } = new();
         public Dictionary<string, List<Action>> Strings { get; set; } = new();
         public Dictionary<string, List<Action>> ReservedBlocks { get; set; } = new();
         public long RelocationTableOffset { get; set; } = 0L;
 
-        public EvflWriter(Stream stream) : base(stream)
+        public BfevWriter(Stream stream) : base(stream)
         {
             // Add the empty string
             Strings.Add("", new());
@@ -146,14 +146,14 @@ namespace EvflLibrary.Parsers
         }
 
         /// <summary>
-        /// Writes a generic <see cref="IEvflDataBlock"/> into the stream
+        /// Writes a generic <see cref="IBfevDataBlock"/> into the stream
         /// </summary>
-        public void WriteDataBlock(IEvflDataBlock evflDataBlock)
+        public void WriteDataBlock(IBfevDataBlock bfevDataBlock)
         {
-            evflDataBlock.Write(this);
+            bfevDataBlock.Write(this);
         }
 
-        public void WriteObjects(IEnumerable<IEvflDataBlock> objects)
+        public void WriteObjects(IEnumerable<IBfevDataBlock> objects)
         {
             foreach (var obj in objects) {
                 obj.Write(this);

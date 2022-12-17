@@ -1,5 +1,5 @@
-﻿using EvflLibrary.Core;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Core;
+using BfevLibrary.Parsers;
 using System.Text;
 
 namespace Tests
@@ -24,14 +24,14 @@ namespace Tests
 
             using MemoryStream stream = new();
 
-            using EvflWriter writer = new(stream);
+            using BfevWriter writer = new(stream);
             string[] keys = sampleTree.Select(x => x.Item1).ToArray();
             writer.WriteRadixTree(keys);
 
             File.WriteAllBytes("D:\\dic.bin", stream.ToArray());
 
             stream.Position = 0;
-            using EvflReader reader = new(stream);
+            using BfevReader reader = new(stream);
             RadixTree<object> radixTree = new(reader);
 
             object[] badLinkedArray = new object[4];

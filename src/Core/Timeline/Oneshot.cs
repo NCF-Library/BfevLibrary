@@ -1,9 +1,9 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class Oneshot : IEvflDataBlock
+    public class Oneshot : IBfevDataBlock
     {
         public float Time { get; set; }
         public short ActorIndex { get; set; }
@@ -15,12 +15,12 @@ namespace EvflLibrary.Core
             Parameters = new();
         }
 
-        public Oneshot(EvflReader reader)
+        public Oneshot(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             Time = reader.ReadSingle();
             ActorIndex = reader.ReadInt16();
@@ -31,7 +31,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             writer.Write(Time);
             writer.Write(ActorIndex);

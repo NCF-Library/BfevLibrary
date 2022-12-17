@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\EvflLibrary.csproj" />
+    <ProjectReference Include="..\src\BfevLibrary.csproj" />
   </ItemGroup>
 
 </Project>

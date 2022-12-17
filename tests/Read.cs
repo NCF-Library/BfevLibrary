@@ -1,4 +1,4 @@
-﻿using EvflLibrary.Core;
+﻿using BfevLibrary.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Tests
         [TestMethod]
         public void ReadEvFl()
         {
-            EvflBase evfl = new(".\\Data\\100enemy.bfevfl");
+            BfevBase evfl = new(".\\Data\\100enemy.bfevfl");
             string serialized = JsonSerializer.Serialize(evfl, new JsonSerializerOptions() {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
@@ -29,7 +29,7 @@ namespace Tests
         [TestMethod]
         public void ReadEvTm()
         {
-            EvflBase evtm = new(".\\Data\\Demo161_0.bfevtm");
+            BfevBase evtm = new(".\\Data\\Demo161_0.bfevtm");
             string serialized = JsonSerializer.Serialize(evtm, new JsonSerializerOptions() {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull

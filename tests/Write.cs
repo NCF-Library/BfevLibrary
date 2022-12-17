@@ -1,5 +1,5 @@
-﻿using EvflLibrary.Core;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Core;
+using BfevLibrary.Parsers;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Text.Json;
@@ -12,14 +12,14 @@ namespace Tests
         [TestMethod]
         public void WriteEvFl()
         {
-            EvflBase evfl = new(".\\Data\\NPC_artist_000.bfevfl");
+            BfevBase evfl = new(".\\Data\\NPC_artist_000.bfevfl");
 
             using FileStream fs = File.Create(".\\Data\\WRITE_NPC_artist_000.bfevfl");
-            using EvflWriter writer = new(fs);
+            using BfevWriter writer = new(fs);
             evfl.Write(writer);
             fs.Dispose();
 
-            EvflBase reEvfl = new(".\\Data\\WRITE_NPC_artist_000.bfevfl");
+            BfevBase reEvfl = new(".\\Data\\WRITE_NPC_artist_000.bfevfl");
             string serialized = JsonSerializer.Serialize(reEvfl, new JsonSerializerOptions() {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
@@ -31,14 +31,14 @@ namespace Tests
         [TestMethod]
         public void WriteEvTm()
         {
-            EvflBase evtm = new(".\\Data\\Demo161_0.bfevtm");
+            BfevBase evtm = new(".\\Data\\Demo161_0.bfevtm");
 
             using FileStream fs = File.Create(".\\Data\\WRITE_Demo161_0.bfevtm");
-            using EvflWriter writer = new(fs);
+            using BfevWriter writer = new(fs);
             evtm.Write(writer);
             fs.Dispose();
 
-            EvflBase reEvtm = new(".\\Data\\WRITE_Demo161_0.bfevtm");
+            BfevBase reEvtm = new(".\\Data\\WRITE_Demo161_0.bfevtm");
             string serialized = JsonSerializer.Serialize(reEvtm, new JsonSerializerOptions() {
                 WriteIndented = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull

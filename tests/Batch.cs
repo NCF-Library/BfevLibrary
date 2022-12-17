@@ -1,5 +1,5 @@
-﻿using EvflLibrary.Core;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Core;
+using BfevLibrary.Parsers;
 using Nintendo.Sarc;
 using Nintendo.Yaz0;
 using System.Diagnostics;
@@ -47,7 +47,7 @@ namespace Tests
 
             Stopwatch watch = Stopwatch.StartNew();
 
-            EvflBase bfev = new(data);
+            BfevBase bfev = new(data);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Read {data.Length}", mark);
             watch.Restart();
@@ -57,13 +57,13 @@ namespace Tests
             timestamps.Add($"Serialize {data.Length}", mark);
             watch.Restart();
 
-            EvflBase deserialized = JsonSerializer.Deserialize<EvflBase>(serialized, options)!;
+            BfevBase deserialized = JsonSerializer.Deserialize<BfevBase>(serialized, options)!;
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Deserialized {data.Length}", mark);
             watch.Restart();
 
             using MemoryStream ms = new();
-            using EvflWriter writer = new(ms);
+            using BfevWriter writer = new(ms);
             deserialized.Write(writer);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Write {data.Length}", mark);
@@ -74,7 +74,7 @@ namespace Tests
 
             byte[] newData = ms.ToArray();
             if (!Enumerable.SequenceEqual(data, newData)) {
-                throw new BadEvflException() {
+                throw new BadBfevException() {
                     GoodBinary = data,
                     GoodMemory = bfev,
                     GoodSerialized = serialized,

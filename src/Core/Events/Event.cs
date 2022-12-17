@@ -1,8 +1,8 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
     public enum EventType
     {
@@ -10,7 +10,7 @@ namespace EvflLibrary.Core
     }
 
     [JsonConverter(typeof(EventConverter))]
-    public abstract class Event : IEvflDataBlock
+    public abstract class Event : IBfevDataBlock
     {
         public string Name { get; set; }
 
@@ -22,7 +22,7 @@ namespace EvflLibrary.Core
         /// An <see cref="Event"/> sub-class instance defined by the read <see cref="EventType"/>.
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static Event LoadTypeInstance(EvflReader reader)
+        public static Event LoadTypeInstance(BfevReader reader)
         {
             // Read event type ahead
             EventType type = reader.TemporarySeek(8, SeekOrigin.Current, () => (EventType)reader.ReadByte());
@@ -37,7 +37,7 @@ namespace EvflLibrary.Core
             };
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             Name = reader.ReadStringPtr();
             Type = (EventType)reader.ReadByte();
@@ -45,7 +45,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             writer.WriteStringPtr(Name);
             writer.Write((byte)Type);
@@ -58,7 +58,7 @@ namespace EvflLibrary.Core
             Type = type;
         }
 
-        internal Event(EvflReader reader)
+        internal Event(BfevReader reader)
         {
             Read(reader);
         }

@@ -1,10 +1,10 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class SubflowEvent : Event, IEvflDataBlock
+    public class SubflowEvent : Event, IBfevDataBlock
     {
         public short NextEventIndex { get; set; }
         public Container? Parameters { get; set; }
@@ -17,7 +17,7 @@ namespace EvflLibrary.Core
             Parameters = new();
         }
 
-        public SubflowEvent(EvflReader reader) : base(reader)
+        public SubflowEvent(BfevReader reader) : base(reader)
         {
             NextEventIndex = reader.ReadInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts
@@ -26,7 +26,7 @@ namespace EvflLibrary.Core
             EntryPointName = reader.ReadStringPtr();
         }
 
-        public new void Write(EvflWriter writer)
+        public new void Write(BfevWriter writer)
         {
             base.Write(writer);
             writer.Write(NextEventIndex);

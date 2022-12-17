@@ -1,9 +1,9 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class Timeline : IEvflDataBlock
+    public class Timeline : IBfevDataBlock
     {
         public const string Magic = "TLIN";
 
@@ -27,12 +27,12 @@ namespace EvflLibrary.Core
             Cuts = new();
             Parameters = new();
         }
-        public Timeline(EvflReader reader)
+        public Timeline(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             reader.CheckMagic(Magic);
             reader.BaseStream.Position += 4 + 4 + 4; // String Pool Offset (uint), Padding (uint), Padding (uint)
@@ -59,7 +59,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             // Nintendo is weird sometimes
             for (int i = 0; i < Actors.Count; i++) {
@@ -107,7 +107,7 @@ namespace EvflLibrary.Core
             }
             writer.Align(8);
 
-            List<Tuple<Action, IEnumerable<IEvflDataBlock>>> arrayBlocks = new() {
+            List<Tuple<Action, IEnumerable<IBfevDataBlock>>> arrayBlocks = new() {
                 new(insertClipsPtr, Clips),
                 new(insertOneshotsPtr, Oneshots),
                 new(insertSubTimelinesPtr, SubTimelines),

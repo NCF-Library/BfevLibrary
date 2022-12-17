@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using static EvflLibrary.Core.RadixTreeHelper;
+using static BfevLibrary.Core.RadixTreeHelper;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
     public class RadixTreeWriter
     {

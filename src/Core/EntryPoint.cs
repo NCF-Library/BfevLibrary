@@ -1,20 +1,20 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class EntryPoint : IEvflDataBlock
+    public class EntryPoint : IBfevDataBlock
     {
         public List<ushort> SubFlowEventIndices { get; set; }
         public ushort EventIndex { get; set; }
 
         public EntryPoint() { }
-        public EntryPoint(EvflReader reader)
+        public EntryPoint(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             long subFlowEventIndicesPtr = reader.ReadInt64();
             reader.BaseStream.Position += 8 + 8; // unused (in botw) VariableDef pointers (ulong, ulong)
@@ -26,7 +26,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             Action insertSubFlowEventIndicesPtr = writer.ReservePtrIf(SubFlowEventIndices.Count > 0, register: true);
             writer.Write(0L); // Unused (in botw) VariableDef pointer (ulong)

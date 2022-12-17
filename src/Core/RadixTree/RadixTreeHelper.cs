@@ -1,6 +1,6 @@
-﻿using EvflLibrary.Parsers;
+﻿using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
     public static class RadixTreeHelper
     {
@@ -9,7 +9,7 @@ namespace EvflLibrary.Core
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="keys"></param>
-        public static void WriteRadixTree(this EvflWriter writer, string[] keys)
+        public static void WriteRadixTree(this BfevWriter writer, string[] keys)
         {
             writer.Write(RadixTreeWriter.Magic.ToCharArray());
             writer.Write(keys.Length);

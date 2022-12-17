@@ -1,10 +1,10 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class EvflBase : IEvflDataBlock
+    public class BfevBase : IBfevDataBlock
     {
         public const string Magic = "BFEVFL";
 
@@ -19,35 +19,35 @@ namespace EvflLibrary.Core
         [JsonIgnore]
         public Timeline? Timeline => Timelines.Count > 0 ? Timelines[0] : null;
 
-        public EvflBase(string file)
+        public BfevBase(string file)
         {
             using FileStream fs = File.OpenRead(file);
-            using EvflReader reader = new(fs);
+            using BfevReader reader = new(fs);
 
             Read(reader);
         }
 
-        public EvflBase(byte[] data)
+        public BfevBase(byte[] data)
         {
             using MemoryStream ms = new(data);
-            using EvflReader reader = new(ms);
+            using BfevReader reader = new(ms);
 
             Read(reader);
         }
 
-        public EvflBase(Stream stream)
+        public BfevBase(Stream stream)
         {
-            using EvflReader reader = new(stream);
+            using BfevReader reader = new(stream);
             Read(reader);
         }
 
-        public EvflBase()
+        public BfevBase()
         {
             Flowcharts = new();
             Timelines = new();
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             // Check the file magic
             reader.CheckMagic(Magic);
@@ -91,7 +91,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             // Write the file magic (byte[6]) and padding (byte[2])
             writer.Write(Magic.AsSpan());

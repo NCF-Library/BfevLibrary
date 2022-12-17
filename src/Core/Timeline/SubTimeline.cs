@@ -1,10 +1,10 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class SubTimeline : IEvflDataBlock
+    public class SubTimeline : IBfevDataBlock
     {
         public string Name { get; set; }
 
@@ -14,18 +14,18 @@ namespace EvflLibrary.Core
             Name = name;
         }
 
-        public SubTimeline(EvflReader reader)
+        public SubTimeline(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             Name = reader.ReadStringPtr();
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             writer.WriteStringPtr(Name);
         }

@@ -1,10 +1,10 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class ForkEvent : Event, IEvflDataBlock
+    public class ForkEvent : Event, IBfevDataBlock
     {
         public short JoinEventIndex { get; set; }
         public List<short> ForkEventIndicies { get; set; }
@@ -15,7 +15,7 @@ namespace EvflLibrary.Core
             ForkEventIndicies = new();
         }
 
-        public ForkEvent(EvflReader reader) : base(reader)
+        public ForkEvent(BfevReader reader) : base(reader)
         {
             ushort forkCount = reader.ReadUInt16();
             JoinEventIndex = reader.ReadInt16();
@@ -24,7 +24,7 @@ namespace EvflLibrary.Core
             reader.BaseStream.Position += 8 + 8; // unused pointers
         }
 
-        public new void Write(EvflWriter writer)
+        public new void Write(BfevWriter writer)
         {
             base.Write(writer);
             writer.Write((ushort)ForkEventIndicies.Count);

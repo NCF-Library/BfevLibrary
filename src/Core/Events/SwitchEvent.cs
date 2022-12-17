@@ -1,10 +1,10 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class SwitchEvent : Event, IEvflDataBlock
+    public class SwitchEvent : Event, IBfevDataBlock
     {
         public record SwitchCase(int Value, short EventIndex);
 
@@ -20,7 +20,7 @@ namespace EvflLibrary.Core
             SwitchCases = new();
         }
 
-        public SwitchEvent(EvflReader reader) : base(reader)
+        public SwitchEvent(BfevReader reader) : base(reader)
         {
             ushort switchCaseCount = reader.ReadUInt16();
             ActorIndex = reader.ReadInt16();
@@ -35,7 +35,7 @@ namespace EvflLibrary.Core
             reader.BaseStream.Position += 8; // Unused pointer
         }
 
-        public new void Write(EvflWriter writer)
+        public new void Write(BfevWriter writer)
         {
             base.Write(writer);
             writer.Write((ushort)SwitchCases.Count);

@@ -1,9 +1,9 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class Actor : IEvflDataBlock
+    public class Actor : IBfevDataBlock
     {
         internal Action? insertActionsPtr = null;
         internal Action? insertQueriesPtr = null;
@@ -25,12 +25,12 @@ namespace EvflLibrary.Core
         public Container? Parameters { get; set; }
 
         public Actor() { }
-        public Actor(EvflReader reader)
+        public Actor(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             Name = reader.ReadStringPtr();
             SecondaryName = reader.ReadStringPtr();
@@ -54,7 +54,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             WriteHeader(writer);
             writer.ReserveBlockWriter("ActorArrayDataBlock", () => {
@@ -62,7 +62,7 @@ namespace EvflLibrary.Core
             });
         }
 
-        public void WriteHeader(EvflWriter writer)
+        public void WriteHeader(BfevWriter writer)
         {
             writer.WriteStringPtr(Name);
             writer.WriteStringPtr(SecondaryName);
@@ -90,7 +90,7 @@ namespace EvflLibrary.Core
             }
         }
 
-        public void WriteData(EvflWriter writer)
+        public void WriteData(BfevWriter writer)
         {
             if (Parameters?.CanWrite() ?? false) {
                 writer.Align(8);

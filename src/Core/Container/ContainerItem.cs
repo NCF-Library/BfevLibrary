@@ -1,21 +1,21 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class ContainerItem : ContainerData, IEvflDataBlock
+    public class ContainerItem : ContainerData, IBfevDataBlock
     {
         internal readonly bool IsRoot = false;
         internal ushort Count;
 
         public ContainerItem() { }
-        public ContainerItem(EvflReader reader, bool isRoot = false)
+        public ContainerItem(BfevReader reader, bool isRoot = false)
         {
             IsRoot = isRoot;
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             ContainerDataType dataType = (ContainerDataType)reader.ReadByte();
             reader.BaseStream.Position += 1;
@@ -36,7 +36,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             ContainerDataType type = GetDataType();
 

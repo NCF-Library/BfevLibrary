@@ -1,9 +1,9 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class Flowchart : IEvflDataBlock
+    public class Flowchart : IBfevDataBlock
     {
         public const string Magic = "EVFL";
 
@@ -24,12 +24,12 @@ namespace EvflLibrary.Core
             Name = name;
         }
 
-        public Flowchart(EvflReader reader)
+        public Flowchart(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             // Check the file magic
             reader.CheckMagic(Magic);
@@ -66,7 +66,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             writer.WriteReserved("insertFlowchartsOffsets");
             writer.WriteReserved("insertFirstBlockOffset", remove: true);

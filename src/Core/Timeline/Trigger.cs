@@ -1,15 +1,15 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
     public enum TriggerType : byte
     {
         Enter = 1, Leave = 2
     }
 
-    public class Trigger : IEvflDataBlock
+    public class Trigger : IBfevDataBlock
     {
         public short ClipIndex { get; set; }
         public TriggerType Type { get; set; }
@@ -21,12 +21,12 @@ namespace EvflLibrary.Core
             Type = type;
         }
 
-        public Trigger(EvflReader reader)
+        public Trigger(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             ClipIndex = reader.ReadInt16();
             Type = (TriggerType)reader.ReadByte();
@@ -35,7 +35,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             writer.Write(ClipIndex);
             writer.Write((byte)Type);

@@ -1,9 +1,9 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class Clip : IEvflDataBlock
+    public class Clip : IBfevDataBlock
     {
         public float StartTime { get; set; }
         public float Duration { get; set; }
@@ -17,12 +17,12 @@ namespace EvflLibrary.Core
             Parameters = new();
         }
 
-        public Clip(EvflReader reader)
+        public Clip(BfevReader reader)
         {
             Read(reader);
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             StartTime = reader.ReadSingle();
             Duration = reader.ReadSingle();
@@ -35,7 +35,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             writer.Write(StartTime);
             writer.Write(Duration);

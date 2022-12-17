@@ -1,7 +1,7 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
     public enum ContainerDataType : byte
     {
@@ -20,10 +20,10 @@ namespace EvflLibrary.Core
         ActorIdentifier,
     }
 
-    public class Container : RadixTree<ContainerItem>, IEvflDataBlock
+    public class Container : RadixTree<ContainerItem>, IBfevDataBlock
     {
         public Container() { }
-        public Container(EvflReader reader)
+        public Container(BfevReader reader)
         {
             Read(reader);
         }
@@ -37,7 +37,7 @@ namespace EvflLibrary.Core
             return true;
         }
 
-        public new IEvflDataBlock Read(EvflReader reader)
+        public new IBfevDataBlock Read(BfevReader reader)
         {
             ContainerItem root = new(reader, isRoot: true);
             StaticKeys = root.Items!.StaticKeys;
@@ -46,7 +46,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public new void Write(EvflWriter writer)
+        public new void Write(BfevWriter writer)
         {
             writer.Write((byte)ContainerDataType.Container);
             writer.Write(new byte());

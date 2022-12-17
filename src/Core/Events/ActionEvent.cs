@@ -1,10 +1,10 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class ActionEvent : Event, IEvflDataBlock
+    public class ActionEvent : Event, IBfevDataBlock
     {
         public short NextEventIndex { get; set; }
         public short ActorIndex { get; set; }
@@ -17,7 +17,7 @@ namespace EvflLibrary.Core
             Parameters = new();
         }
 
-        public ActionEvent(EvflReader reader) : base(reader)
+        public ActionEvent(BfevReader reader) : base(reader)
         {
             NextEventIndex = reader.ReadInt16();
             ActorIndex = reader.ReadInt16();
@@ -26,7 +26,7 @@ namespace EvflLibrary.Core
             reader.BaseStream.Position += 8 + 8; // unused pointers
         }
 
-        public new void Write(EvflWriter writer)
+        public new void Write(BfevWriter writer)
         {
             base.Write(writer);
             writer.Write(NextEventIndex);

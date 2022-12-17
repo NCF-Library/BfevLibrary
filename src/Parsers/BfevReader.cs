@@ -1,10 +1,10 @@
 ﻿using System.Text;
 
-namespace EvflLibrary.Parsers
+namespace BfevLibrary.Parsers
 {
-    public class EvflReader : BinaryReader
+    public class BfevReader : BinaryReader
     {
-        public EvflReader(Stream stream) : base(stream) { }
+        public BfevReader(Stream stream) : base(stream) { }
 
         /// <summary>
         /// Aligns the stream to <paramref name="align"/> bytes

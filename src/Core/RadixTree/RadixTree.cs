@@ -1,9 +1,9 @@
-﻿using EvflLibrary.Common;
-using EvflLibrary.Parsers;
+﻿using BfevLibrary.Common;
+using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
-    public class RadixTree<T> : Dictionary<string, T>, IEvflDataBlock
+    public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
     {
         internal string[] StaticKeys = Array.Empty<string>();
 
@@ -15,7 +15,7 @@ namespace EvflLibrary.Core
         }
 
         public RadixTree() { }
-        public RadixTree(EvflReader reader, T[]? array = null)
+        public RadixTree(BfevReader reader, T[]? array = null)
         {
             Read(reader);
 
@@ -40,7 +40,7 @@ namespace EvflLibrary.Core
             catch { }
         }
 
-        public IEvflDataBlock Read(EvflReader reader)
+        public IBfevDataBlock Read(BfevReader reader)
         {
             reader.CheckMagic(RadixTreeWriter.Magic);
             int count = reader.ReadInt32();
@@ -55,7 +55,7 @@ namespace EvflLibrary.Core
             return this;
         }
 
-        public void Write(EvflWriter writer)
+        public void Write(BfevWriter writer)
         {
             RadixTreeHelper.WriteRadixTree(writer, Keys.ToArray());
         }

@@ -1,6 +1,6 @@
-﻿using EvflLibrary.Parsers;
+﻿using BfevLibrary.Parsers;
 
-namespace EvflLibrary.Core
+namespace BfevLibrary.Core
 {
     public class ContainerData
     {
@@ -19,7 +19,7 @@ namespace EvflLibrary.Core
         public Tuple<string, string>? ActorIdentifier { get; set; }
 
         public ContainerData() { }
-        public void ReadData(EvflReader reader, ushort count, ContainerDataType type)
+        public void ReadData(BfevReader reader, ushort count, ContainerDataType type)
         {
             if (type == ContainerDataType.Argument) {
                 Argument = reader.ReadStringPtr();
@@ -77,7 +77,7 @@ namespace EvflLibrary.Core
             }
         }
 
-        public void WriteData(EvflWriter writer)
+        public void WriteData(BfevWriter writer)
         {
             if (Argument != null) {
                 writer.WriteInlineStringPtrs(2, Argument);
