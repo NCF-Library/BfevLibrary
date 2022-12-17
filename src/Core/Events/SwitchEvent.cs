@@ -6,10 +6,10 @@ namespace EvflLibrary.Core
 {
     public class SwitchEvent : Event, IEvflDataBlock
     {
-        public record SwitchCase(uint Value, ushort EventIndex);
+        public record SwitchCase(int Value, short EventIndex);
 
-        public ushort ActorIndex { get; set; }
-        public ushort ActorQueryIndex { get; set; }
+        public short ActorIndex { get; set; }
+        public short ActorQueryIndex { get; set; }
         public Container? Parameters { get; set; }
         public List<SwitchCase> SwitchCases { get; set; }
 
@@ -23,12 +23,12 @@ namespace EvflLibrary.Core
         public SwitchEvent(EvflReader reader) : base(reader)
         {
             ushort switchCaseCount = reader.ReadUInt16();
-            ActorIndex = reader.ReadUInt16();
-            ActorQueryIndex = reader.ReadUInt16();
+            ActorIndex = reader.ReadInt16();
+            ActorQueryIndex = reader.ReadInt16();
             Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             SwitchCases = reader.ReadObjectsPtr(new SwitchCase[switchCaseCount], () => {
-                SwitchCase switchCase = new(reader.ReadUInt32(), reader.ReadUInt16());
-                reader.ReadUInt16();
+                SwitchCase switchCase = new(reader.ReadInt32(), reader.ReadInt16());
+                reader.ReadInt16();
                 reader.Align(8);
                 return switchCase;
             }).ToList();
@@ -58,8 +58,8 @@ namespace EvflLibrary.Core
                 }
 
                 if (Parameters?.CanWrite() ?? false) {
-                insertParamsPtr();
-                Parameters?.Write(writer);
+                    insertParamsPtr();
+                    Parameters?.Write(writer);
                 }
             });
         }

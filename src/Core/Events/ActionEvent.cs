@@ -6,9 +6,9 @@ namespace EvflLibrary.Core
 {
     public class ActionEvent : Event, IEvflDataBlock
     {
-        public ushort NextEventIndex { get; set; }
-        public ushort ActorIndex { get; set; }
-        public ushort ActorActionIndex { get; set; }
+        public short NextEventIndex { get; set; }
+        public short ActorIndex { get; set; }
+        public short ActorActionIndex { get; set; }
         public Container? Parameters { get; set; }
 
         [JsonConstructor]
@@ -19,9 +19,9 @@ namespace EvflLibrary.Core
 
         public ActionEvent(EvflReader reader) : base(reader)
         {
-            NextEventIndex = reader.ReadUInt16();
-            ActorIndex = reader.ReadUInt16();
-            ActorActionIndex = reader.ReadUInt16();
+            NextEventIndex = reader.ReadInt16();
+            ActorIndex = reader.ReadInt16();
+            ActorActionIndex = reader.ReadInt16();
             Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             reader.BaseStream.Position += 8 + 8; // unused pointers
         }
@@ -38,8 +38,8 @@ namespace EvflLibrary.Core
 
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {
                 if (Parameters?.CanWrite() ?? false) {
-                insertParamsPtr();
-                Parameters?.Write(writer);
+                    insertParamsPtr();
+                    Parameters?.Write(writer);
                 }
             });
         }

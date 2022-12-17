@@ -6,7 +6,7 @@ namespace EvflLibrary.Core
 {
     public class SubflowEvent : Event, IEvflDataBlock
     {
-        public ushort NextEventIndex { get; set; }
+        public short NextEventIndex { get; set; }
         public Container? Parameters { get; set; }
         public string FlowchartName { get; set; }
         public string EntryPointName { get; set; }
@@ -19,7 +19,7 @@ namespace EvflLibrary.Core
 
         public SubflowEvent(EvflReader reader) : base(reader)
         {
-            NextEventIndex = reader.ReadUInt16();
+            NextEventIndex = reader.ReadInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts
             Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             FlowchartName = reader.ReadStringPtr();
@@ -37,8 +37,8 @@ namespace EvflLibrary.Core
             writer.WriteStringPtr(EntryPointName);
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {
                 if (Parameters?.CanWrite() ?? false) {
-                insertParamsPtr();
-                Parameters?.Write(writer);
+                    insertParamsPtr();
+                    Parameters?.Write(writer);
                 }
             });
         }

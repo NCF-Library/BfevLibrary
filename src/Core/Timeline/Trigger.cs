@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -10,7 +11,7 @@ namespace EvflLibrary.Core
 
     public class Trigger : IEvflDataBlock
     {
-        public ushort ClipIndex { get; set; }
+        public short ClipIndex { get; set; }
         public TriggerType Type { get; set; }
 
         [JsonConstructor]
@@ -27,7 +28,7 @@ namespace EvflLibrary.Core
 
         public IEvflDataBlock Read(EvflReader reader)
         {
-            ClipIndex = reader.ReadUInt16();
+            ClipIndex = reader.ReadInt16();
             Type = (TriggerType)reader.ReadByte();
             reader.BaseStream.Position += 1; // Padding (byte)
 

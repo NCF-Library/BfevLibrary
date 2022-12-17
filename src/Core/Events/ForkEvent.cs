@@ -6,8 +6,8 @@ namespace EvflLibrary.Core
 {
     public class ForkEvent : Event, IEvflDataBlock
     {
-        public ushort JoinEventIndex { get; set; }
-        public List<ushort> ForkEventIndicies { get; set; }
+        public short JoinEventIndex { get; set; }
+        public List<short> ForkEventIndicies { get; set; }
 
         [JsonConstructor]
         public ForkEvent(string name, EventType type) : base(name, type)
@@ -18,9 +18,9 @@ namespace EvflLibrary.Core
         public ForkEvent(EvflReader reader) : base(reader)
         {
             ushort forkCount = reader.ReadUInt16();
-            JoinEventIndex = reader.ReadUInt16();
+            JoinEventIndex = reader.ReadInt16();
             reader.BaseStream.Position += 2; // unused ushort
-            ForkEventIndicies = reader.ReadObjectsPtr(new ushort[forkCount], reader.ReadUInt16).ToList();
+            ForkEventIndicies = reader.ReadObjectsPtr(new short[forkCount], reader.ReadInt16).ToList();
             reader.BaseStream.Position += 8 + 8; // unused pointers
         }
 

@@ -6,13 +6,13 @@ namespace EvflLibrary.Core
 {
     public class JoinEvent : Event, IEvflDataBlock
     {
-        public ushort NextEventIndex { get; set; }
+        public short NextEventIndex { get; set; }
 
         [JsonConstructor]
         public JoinEvent(string name, EventType type) : base(name, type) { }
         public JoinEvent(EvflReader reader) : base(reader)
         {
-            NextEventIndex = reader.ReadUInt16();
+            NextEventIndex = reader.ReadInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts
             reader.BaseStream.Position += 8 + 8 + 8; // unused pointers
         }
