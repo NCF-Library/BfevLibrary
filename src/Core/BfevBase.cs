@@ -27,11 +27,8 @@ namespace BfevLibrary.Core
 
         internal BfevBase(Stream stream)
         {
-            using (BfevReader reader = new(stream)) {
-                Read(reader);
-            }
-
-            stream.Dispose();
+            using BfevReader reader = new(stream);
+            Read(reader);
         }
 
         public IBfevDataBlock Read(BfevReader reader)

@@ -50,11 +50,8 @@ namespace BfevLibrary
 
         public void ToBinary(Stream stream)
         {
-            using (BfevWriter writer = new(stream)) {
-                base.Write(writer);
-            }
-
-            stream.Dispose();
+            using BfevWriter writer = new(stream);
+            base.Write(writer);
         }
 
         public string ToJson(bool format = false)
