@@ -19,32 +19,19 @@ namespace BfevLibrary.Core
         [JsonIgnore]
         public Timeline? Timeline => Timelines.Count > 0 ? Timelines[0] : null;
 
-        public BfevBase(string file)
-        {
-            using FileStream fs = File.OpenRead(file);
-            using BfevReader reader = new(fs);
-
-            Read(reader);
-        }
-
-        public BfevBase(byte[] data)
-        {
-            using MemoryStream ms = new(data);
-            using BfevReader reader = new(ms);
-
-            Read(reader);
-        }
-
-        public BfevBase(Stream stream)
-        {
-            using BfevReader reader = new(stream);
-            Read(reader);
-        }
-
-        public BfevBase()
+        internal BfevBase()
         {
             Flowcharts = new();
             Timelines = new();
+        }
+
+        internal BfevBase(Stream stream)
+        {
+            using (BfevReader reader = new(stream)) {
+                Read(reader);
+            }
+
+            stream.Dispose();
         }
 
         public IBfevDataBlock Read(BfevReader reader)
