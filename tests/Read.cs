@@ -1,13 +1,5 @@
-﻿using BfevLibrary.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
-using System;
-using System.Collections.Generic;
+﻿using BfevLibrary;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -17,11 +9,8 @@ namespace Tests
         [TestMethod]
         public void ReadEvFl()
         {
-            BfevBase evfl = new(".\\Data\\100enemy.bfevfl");
-            string serialized = JsonSerializer.Serialize(evfl, new JsonSerializerOptions() {
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            });
+            BfevFile evfl = new(".\\Data\\100enemy.bfevfl");
+            string serialized = evfl.ToJson(format: true);
             Debug.WriteLine(serialized);
             File.WriteAllText(".\\Data\\100enemy.json", serialized);
         }
@@ -29,11 +18,8 @@ namespace Tests
         [TestMethod]
         public void ReadEvTm()
         {
-            BfevBase evtm = new(".\\Data\\Demo161_0.bfevtm");
-            string serialized = JsonSerializer.Serialize(evtm, new JsonSerializerOptions() {
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            });
+            BfevFile evtm = new(".\\Data\\Demo161_0.bfevtm");
+            string serialized = evtm.ToJson(format: true);
             Debug.WriteLine(serialized);
             File.WriteAllText(".\\Demo161_0.json", serialized);
         }

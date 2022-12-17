@@ -8,7 +8,7 @@ namespace Tests.Exceptions
         public string BadSerialized { get; set; } = string.Empty;
         public byte[] GoodBinary { get; set; } = Array.Empty<byte>();
         public byte[] BadBinary { get; set; } = Array.Empty<byte>();
-        public BfevBase GoodMemory { get; set; } = new();
-        public BfevBase BadMemory { get; set; } = new();
+        public required BfevBase GoodMemory { get; set; }
+        public required BfevBase BadMemory { get; set; }
     }
 }

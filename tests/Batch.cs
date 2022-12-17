@@ -1,5 +1,4 @@
-﻿using BfevLibrary.Core;
-using BfevLibrary.Parsers;
+﻿using BfevLibrary;
 using Nintendo.Sarc;
 using Nintendo.Yaz0;
 using System.Diagnostics;
@@ -43,36 +42,32 @@ namespace Tests
             };
 
             Dictionary<string, long> timestamps = new();
+            Stopwatch watch = Stopwatch.StartNew();
             long mark;
 
-            Stopwatch watch = Stopwatch.StartNew();
-
-            BfevBase bfev = new(data);
+            BfevFile bfev = new(data);
             mark = watch.ElapsedMilliseconds;
-            timestamps.Add($"Read {data.Length}", mark);
+            timestamps.Add($"Parse {data.Length}", mark);
             watch.Restart();
 
-            string serialized = JsonSerializer.Serialize(bfev, options);
+            string serialized = bfev.ToJson(true);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Serialize {data.Length}", mark);
             watch.Restart();
 
-            BfevBase deserialized = JsonSerializer.Deserialize<BfevBase>(serialized, options)!;
+            BfevFile deserialized = BfevFile.FromJson(serialized);
             mark = watch.ElapsedMilliseconds;
-            timestamps.Add($"Deserialized {data.Length}", mark);
+            timestamps.Add($"Deserialize {data.Length}", mark);
             watch.Restart();
 
-            using MemoryStream ms = new();
-            using BfevWriter writer = new(ms);
-            deserialized.Write(writer);
+            byte[] newData = deserialized.ToBinary();
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Write {data.Length}", mark);
             watch.Restart();
 
-            mark = watch.ElapsedMilliseconds;
+            // Summarize current benchmark
             timestamps.Add($"Completed {data.Length}", timestamps.Values.Sum());
 
-            byte[] newData = ms.ToArray();
             if (!Enumerable.SequenceEqual(data, newData)) {
                 throw new BadBfevException() {
                     GoodBinary = data,
