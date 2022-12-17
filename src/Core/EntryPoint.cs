@@ -8,6 +8,7 @@ namespace EvflLibrary.Core
         public List<ushort> SubFlowEventIndices { get; set; }
         public ushort EventIndex { get; set; }
 
+        public EntryPoint() { }
         public EntryPoint(EvflReader reader)
         {
             Read(reader);

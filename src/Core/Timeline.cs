@@ -18,6 +18,16 @@ namespace EvflLibrary.Core
         public List<Cut> Cuts { get; set; }
         public Container Parameters { get; set; }
 
+        public Timeline()
+        {
+            Actors = new();
+            Clips = new();
+            Oneshots = new();
+            Triggers = new();
+            SubTimelines = new();
+            Cuts = new();
+            Parameters = new();
+        }
         public Timeline(EvflReader reader)
         {
             Read(reader);

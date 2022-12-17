@@ -1,6 +1,5 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
-using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -8,15 +7,23 @@ namespace EvflLibrary.Core
     {
         public const string Magic = "EVFL";
 
-        [JsonIgnore]
         public string Name { get; set; }
-
         public List<Actor> Actors { get; set; }
         public List<Event> Events { get; set; }
         public RadixTree<EntryPoint> EntryPoints { get; set; }
 
-        public Flowchart() { }
-        public Flowchart(string name) => Name = name;
+        public Flowchart()
+        {
+            Actors = new();
+            Events = new();
+            EntryPoints = new();
+        }
+
+        public Flowchart(string name) : this()
+        {
+            Name = name;
+        }
+
         public Flowchart(EvflReader reader)
         {
             Read(reader);

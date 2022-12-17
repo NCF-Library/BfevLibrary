@@ -10,6 +10,11 @@ namespace EvflLibrary.Core
         public short ActorActionIndex { get; set; }
         public Container? Parameters { get; set; }
 
+        public Oneshot()
+        {
+            Parameters = new();
+        }
+
         public Oneshot(EvflReader reader)
         {
             Read(reader);

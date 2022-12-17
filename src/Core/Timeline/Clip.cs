@@ -12,6 +12,11 @@ namespace EvflLibrary.Core
         public byte Unknown { get; set; }
         public Container? Parameters { get; set; }
 
+        public Clip()
+        {
+            Parameters = new();
+        }
+
         public Clip(EvflReader reader)
         {
             Read(reader);

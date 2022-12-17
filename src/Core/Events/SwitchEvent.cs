@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -12,7 +13,13 @@ namespace EvflLibrary.Core
         public Container? Parameters { get; set; }
         public List<SwitchCase> SwitchCases { get; set; }
 
-        public SwitchEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
+        [JsonConstructor]
+        public SwitchEvent(string name, EventType type) : base(name, type)
+        {
+            Parameters = new();
+            SwitchCases = new();
+        }
+
         {
             ushort switchCaseCount = reader.ReadUInt16();
             ActorIndex = reader.ReadUInt16();

@@ -9,9 +9,7 @@ namespace EvflLibrary.Core
         internal readonly bool IsRoot = false;
         internal ushort Count;
 
-        [JsonIgnore]
-        public ContainerDataType DataType { get; set; }
-
+        public ContainerItem() { }
         public ContainerItem(EvflReader reader, bool isRoot = false)
         {
             IsRoot = isRoot;

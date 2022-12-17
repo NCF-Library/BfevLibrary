@@ -1,11 +1,18 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
     public class SubTimeline : IEvflDataBlock
     {
         public string Name;
+
+        [JsonConstructor]
+        public SubTimeline(string name)
+        {
+            Name = name;
+        }
 
         public SubTimeline(EvflReader reader)
         {

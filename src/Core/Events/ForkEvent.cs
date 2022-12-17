@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -7,6 +8,12 @@ namespace EvflLibrary.Core
     {
         public ushort JoinEventIndex { get; set; }
         public List<ushort> ForkEventIndicies { get; set; }
+
+        [JsonConstructor]
+        public ForkEvent(string name, EventType type) : base(name, type)
+        {
+            ForkEventIndicies = new();
+        }
 
         public ForkEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
         {

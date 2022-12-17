@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -10,7 +11,12 @@ namespace EvflLibrary.Core
         public ushort ActorActionIndex { get; set; }
         public Container? Parameters { get; set; }
 
-        public ActionEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
+        [JsonConstructor]
+        public ActionEvent(string name, EventType type) : base(name, type)
+        {
+            Parameters = new();
+        }
+
         {
             NextEventIndex = reader.ReadUInt16();
             ActorIndex = reader.ReadUInt16();

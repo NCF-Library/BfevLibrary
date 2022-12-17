@@ -25,6 +25,7 @@ namespace EvflLibrary.Core
         public List<string> Queries { get; set; }
         public Container? Parameters { get; set; }
 
+        public Actor() { }
         public Actor(EvflReader reader)
         {
             Read(reader);

@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -7,7 +8,8 @@ namespace EvflLibrary.Core
     {
         public ushort NextEventIndex { get; set; }
 
-        public JoinEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
+        [JsonConstructor]
+        public JoinEvent(string name, EventType type) : base(name, type) { }
         {
             NextEventIndex = reader.ReadUInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts

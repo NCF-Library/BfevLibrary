@@ -1,5 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
+using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -10,7 +11,12 @@ namespace EvflLibrary.Core
         public string FlowchartName { get; set; }
         public string EntryPointName { get; set; }
 
-        public SubflowEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
+        [JsonConstructor]
+        public SubflowEvent(string name, EventType type) : base(name, type)
+        {
+            Parameters = new();
+        }
+
         {
             NextEventIndex = reader.ReadUInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts

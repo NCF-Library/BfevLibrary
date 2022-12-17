@@ -22,6 +22,7 @@ namespace EvflLibrary.Core
 
     public class Container : RadixTree<ContainerItem>, IEvflDataBlock
     {
+        public Container() { }
         public Container(EvflReader reader)
         {
             Read(reader);

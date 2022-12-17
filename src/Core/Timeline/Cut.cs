@@ -9,6 +9,11 @@ namespace EvflLibrary.Core
         public string Name { get; set; }
         public Container? Parameters { get; set; }
 
+        public Cut()
+        {
+            Parameters = new();
+        }
+
         public Cut(EvflReader reader)
         {
             Read(reader);
