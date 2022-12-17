@@ -9,11 +9,8 @@ namespace EvflLibrary.Core
         Action, Switch, Fork, Join, Subflow
     }
 
-    [JsonDerivedType(typeof(ActionEvent))]
+    [JsonConverter(typeof(EventConverter))]
     public abstract class Event : IEvflDataBlock
-    [JsonDerivedType(typeof(JoinEvent))]
-    [JsonDerivedType(typeof(SubflowEvent))]
-    [JsonDerivedType(typeof(SwitchEvent))]
     {
         public string Name { get; set; }
 
