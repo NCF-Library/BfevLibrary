@@ -86,6 +86,7 @@ namespace EvflLibrary.Core
                 }
                 else {
                     action();
+                    action = null;
                 }
             }
         }
@@ -104,6 +105,7 @@ namespace EvflLibrary.Core
                 }
                 else {
                     insertParamsPtr();
+                    insertParamsPtr = null;
                 }
 
                 Parameters!.Write(writer);
@@ -121,6 +123,7 @@ namespace EvflLibrary.Core
                 }
                 else {
                     insertActionsPtr();
+                    insertActionsPtr = null;
                 }
 
                 for (int i = 0; i < Actions.Count; i++) {
@@ -140,6 +143,7 @@ namespace EvflLibrary.Core
                 }
                 else {
                     insertQueriesPtr();
+                    insertQueriesPtr = null;
                 }
 
                 for (int i = 0; i < Queries.Count; i++) {
