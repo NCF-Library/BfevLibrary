@@ -13,6 +13,13 @@ namespace EvflLibrary.Core
         public ushort ClipIndex { get; set; }
         public TriggerType Type { get; set; }
 
+        [JsonConstructor]
+        public Trigger(short clipIndex, TriggerType type)
+        {
+            ClipIndex = clipIndex;
+            Type = type;
+        }
+
         public Trigger(EvflReader reader)
         {
             Read(reader);
