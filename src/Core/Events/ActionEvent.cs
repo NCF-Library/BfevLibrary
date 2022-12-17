@@ -31,13 +31,15 @@ namespace EvflLibrary.Core
             writer.Write(NextEventIndex);
             writer.Write(ActorIndex);
             writer.Write(ActorActionIndex);
-            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters?.CanWrite() ?? false);
             writer.Write(0L);
             writer.Write(0L);
 
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {
+                if (Parameters?.CanWrite() ?? false) {
                 insertParamsPtr();
                 Parameters?.Write(writer);
+                }
             });
         }
     }

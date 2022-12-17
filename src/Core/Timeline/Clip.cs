@@ -43,11 +43,13 @@ namespace EvflLibrary.Core
             writer.Write(ActorActionIndex);
             writer.Write(Unknown);
             writer.Seek(3, SeekOrigin.Current); // Padding (byte[3])
-            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters?.CanWrite() ?? false);
 
             writer.ReserveBlockWriter("ClipArrayDataBlock", () => {
+                if (Parameters?.CanWrite() ?? false) {
                 insertParamsPtr();
                 Parameters?.Write(writer);
+                }
             });
         }
     }

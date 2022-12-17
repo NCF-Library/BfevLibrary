@@ -31,12 +31,14 @@ namespace EvflLibrary.Core
             writer.Write(NextEventIndex);
             writer.Write((ushort)0);
             writer.Write((ushort)0);
-            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters?.CanWrite() ?? false);
             writer.WriteStringPtr(FlowchartName);
             writer.WriteStringPtr(EntryPointName);
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {
+                if (Parameters?.CanWrite() ?? false) {
                 insertParamsPtr();
                 Parameters?.Write(writer);
+                }
             });
         }
     }

@@ -69,9 +69,9 @@ namespace EvflLibrary.Core
             writer.WriteStringPtr(SecondaryName);
             writer.WriteStringPtr(ArgumentName);
 
-            CheckAction(ref insertActionsPtr, Actions.Count, register: true);
-            CheckAction(ref insertQueriesPtr, Queries.Count, register: true);
-            CheckAction(ref insertParamsPtr, Parameters?.Count ?? 0, register: false);
+            CheckAction(ref insertActionsPtr, Actions.Count > 0, register: true);
+            CheckAction(ref insertQueriesPtr, Queries.Count > 0, register: true);
+            CheckAction(ref insertParamsPtr, Parameters?.CanWrite() ?? false, register: false);
 
             writer.Write((ushort)Actions.Count);
             writer.Write((ushort)Queries.Count);
@@ -79,10 +79,10 @@ namespace EvflLibrary.Core
             writer.Write(CutNumber);
             writer.Write(new byte());
 
-            void CheckAction(ref Action? action, int count, bool register)
+            void CheckAction(ref Action? action, bool condition, bool register)
             {
                 if (action == null) {
-                    action = writer.ReservePtrIf(count > 0, register: register);
+                    action = writer.ReservePtrIf(condition, register: register);
                 }
                 else {
                     action();
@@ -92,7 +92,7 @@ namespace EvflLibrary.Core
 
         public void WriteData(EvflWriter writer)
         {
-            if ((Parameters?.Count ?? 0) > 0) {
+            if (Parameters?.CanWrite() ?? false) {
                 writer.Align(8);
 
                 if (insertParamsPtr == null) {

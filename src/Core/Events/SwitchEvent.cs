@@ -40,7 +40,7 @@ namespace EvflLibrary.Core
             writer.Write((ushort)SwitchCases.Count);
             writer.Write(ActorIndex);
             writer.Write(ActorQueryIndex);
-            Action insertParamsPtr = writer.ReservePtrIf((Parameters?.Count ?? 0) > 0);
+            Action insertParamsPtr = writer.ReservePtrIf(Parameters?.CanWrite() ?? false);
             Action insertSwitchCasesPtr = writer.ReservePtrIf(SwitchCases.Count > 0, register: true);
             writer.Write(0L);
             writer.ReserveBlockWriter("EventArrayDataBlock", () => {
@@ -56,8 +56,10 @@ namespace EvflLibrary.Core
                     }
                 }
 
+                if (Parameters?.CanWrite() ?? false) {
                 insertParamsPtr();
                 Parameters?.Write(writer);
+                }
             });
         }
     }

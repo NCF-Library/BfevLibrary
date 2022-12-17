@@ -28,6 +28,15 @@ namespace EvflLibrary.Core
             Read(reader);
         }
 
+        public bool? CanWrite()
+        {
+            if (Values.Count <= 0) {
+                return null;
+            }
+
+            return true;
+        }
+
         public new IEvflDataBlock Read(EvflReader reader)
         {
             ContainerItem root = new(reader, isRoot: true);
