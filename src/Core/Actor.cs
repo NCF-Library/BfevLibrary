@@ -1,6 +1,5 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
-using Microsoft.Win32;
 
 namespace EvflLibrary.Core
 {

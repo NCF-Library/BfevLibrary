@@ -140,7 +140,7 @@ namespace EvflLibrary.Core
                 ContainerDataType.String => 1,
                 ContainerDataType.WString => 1,
                 ContainerDataType.IntArray => IntArray!.Length,
-                ContainerDataType.BoolArray=> BoolArray!.Length,
+                ContainerDataType.BoolArray => BoolArray!.Length,
                 ContainerDataType.FloatArray => FloatArray!.Length,
                 ContainerDataType.StringArray => StringArray!.Length,
                 ContainerDataType.WStringArray => WStringArray!.Length,

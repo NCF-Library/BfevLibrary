@@ -1,16 +1,6 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
-using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace EvflLibrary.Core
 {
@@ -64,25 +54,25 @@ namespace EvflLibrary.Core
 
             // Padding
             reader.BaseStream.Position += 2;
-            
+
             // Version (byte[4])
             Version = string.Join('.', reader.ReadBytes(4));
-            
+
             // Byte order (2), alignment (1), padding (1)
             reader.BaseStream.Position += 4;
-            
+
             // FileNameOffset (uint)
             FileName = reader.ReadStringAtOffset(reader.ReadUInt32() - 2);
-            
+
             // IsRelocatedFlag (ushort), FirstBlockOffset (ushort), RelocationTableOffset (uint), FileSize (uint)
             reader.BaseStream.Position += 12;
-            
+
             // FlowchartCount (ushort)
             var flowcharts = new Flowchart[reader.ReadUInt16()];
-            
+
             // TimelineCount (ushort)
             var timelines = new Timeline[reader.ReadUInt16()];
-            
+
             // Padding
             reader.BaseStream.Position += 4;
 

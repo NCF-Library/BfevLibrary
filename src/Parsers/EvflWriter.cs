@@ -1,9 +1,5 @@
 ﻿using EvflLibrary.Common;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Net.Sockets;
-using System.Diagnostics;
 
 namespace EvflLibrary.Parsers
 {

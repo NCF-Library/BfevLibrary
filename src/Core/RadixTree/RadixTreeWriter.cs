@@ -116,7 +116,7 @@ namespace EvflLibrary.Core
 
             InsertEntry(name, entry);
         }
-        
+
         public void InsertEntry(string key, Entry entry)
         {
             entry.Index = RadixTree.Count;

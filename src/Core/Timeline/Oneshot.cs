@@ -41,8 +41,8 @@ namespace EvflLibrary.Core
 
             writer.ReserveBlockWriter("OneshotArrayDataBlock", () => {
                 if (Parameters?.CanWrite() ?? false) {
-                insertParamsPtr();
-                Parameters?.Write(writer);
+                    insertParamsPtr();
+                    Parameters?.Write(writer);
                 }
             });
         }

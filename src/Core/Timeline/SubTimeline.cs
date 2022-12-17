@@ -6,7 +6,7 @@ namespace EvflLibrary.Core
 {
     public class SubTimeline : IEvflDataBlock
     {
-        public string Name;
+        public string Name { get; set; }
 
         [JsonConstructor]
         public SubTimeline(string name)

@@ -1,6 +1,5 @@
 ﻿using EvflLibrary.Common;
 using EvflLibrary.Parsers;
-using System.Text.Json.Serialization;
 
 namespace EvflLibrary.Core
 {
@@ -28,7 +27,7 @@ namespace EvflLibrary.Core
         public void LinkToArray(T[] array)
         {
             if (array.Length != StaticKeys.Length) {
-                throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.", 
+                throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.",
                     new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {StaticKeys.Length}.")
                 );
             }
@@ -37,7 +36,8 @@ namespace EvflLibrary.Core
                 for (int i = 0; i < array.Length; i++) {
                     Add(StaticKeys[i], array[i]);
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         public IEvflDataBlock Read(EvflReader reader)
