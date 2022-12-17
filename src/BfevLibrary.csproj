@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/NCF-Library/BfevLibrary</RepositoryUrl>
     <PackageTags>bfevfl;evfl;event flows;botw;nintendo;zelda</PackageTags>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>icon.png</PackageIcon>
