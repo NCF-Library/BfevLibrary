@@ -14,7 +14,7 @@ BfevFile bfev = new("path/to/file.bfevfl");
 **Read from a byte[]**
 ```cs
 SarcFile sarc = new("D:/Botw/Update/content/Events/100enemy.sbeventpack");
-BfevFile bfev = new(sarc.Files["EventFlows/100enemy.bfevfl"]);
+BfevFile bfev = new(sarc.Files["EventFlow/100enemy.bfevfl"]);
 ```
 
 **Read from a Stream**
