@@ -20,6 +20,7 @@ namespace EvflLibrary.Core
             SwitchCases = new();
         }
 
+        public SwitchEvent(EvflReader reader) : base(reader)
         {
             ushort switchCaseCount = reader.ReadUInt16();
             ActorIndex = reader.ReadUInt16();

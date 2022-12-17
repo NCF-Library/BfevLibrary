@@ -17,6 +17,7 @@ namespace EvflLibrary.Core
             Parameters = new();
         }
 
+        public ActionEvent(EvflReader reader) : base(reader)
         {
             NextEventIndex = reader.ReadUInt16();
             ActorIndex = reader.ReadUInt16();

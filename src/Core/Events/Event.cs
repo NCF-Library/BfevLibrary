@@ -10,11 +10,10 @@ namespace EvflLibrary.Core
     }
 
     [JsonDerivedType(typeof(ActionEvent))]
-    [JsonDerivedType(typeof(ForkEvent))]
+    public abstract class Event : IEvflDataBlock
     [JsonDerivedType(typeof(JoinEvent))]
     [JsonDerivedType(typeof(SubflowEvent))]
     [JsonDerivedType(typeof(SwitchEvent))]
-    public class Event : IEvflDataBlock
     {
         public string Name { get; set; }
 
@@ -28,13 +27,15 @@ namespace EvflLibrary.Core
         /// <exception cref="NotImplementedException"></exception>
         public static Event LoadTypeInstance(EvflReader reader)
         {
-            Event baseEvent = new(reader);
-            return baseEvent.Type switch {
-                EventType.Action => new ActionEvent(reader, baseEvent),
-                EventType.Switch => new SwitchEvent(reader, baseEvent),
-                EventType.Fork => new ForkEvent(reader, baseEvent),
-                EventType.Join => new JoinEvent(reader, baseEvent),
-                EventType.Subflow => new SubflowEvent(reader, baseEvent),
+            // Read event type ahead
+            EventType type = reader.TemporarySeek(8, SeekOrigin.Current, () => (EventType)reader.ReadByte());
+
+            return type switch {
+                EventType.Action => new ActionEvent(reader),
+                EventType.Switch => new SwitchEvent(reader),
+                EventType.Fork => new ForkEvent(reader),
+                EventType.Join => new JoinEvent(reader),
+                EventType.Subflow => new SubflowEvent(reader),
                 _ => throw new NotImplementedException()
             };
         }
@@ -58,12 +59,6 @@ namespace EvflLibrary.Core
         {
             Name = name;
             Type = type;
-        }
-
-        internal Event(Event baseEvent)
-        {
-            Name = baseEvent.Name;
-            Type = baseEvent.Type;
         }
 
         internal Event(EvflReader reader)

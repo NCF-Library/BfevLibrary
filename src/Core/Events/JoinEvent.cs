@@ -10,6 +10,7 @@ namespace EvflLibrary.Core
 
         [JsonConstructor]
         public JoinEvent(string name, EventType type) : base(name, type) { }
+        public JoinEvent(EvflReader reader) : base(reader)
         {
             NextEventIndex = reader.ReadUInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts

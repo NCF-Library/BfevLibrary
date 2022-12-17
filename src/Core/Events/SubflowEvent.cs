@@ -17,6 +17,7 @@ namespace EvflLibrary.Core
             Parameters = new();
         }
 
+        public SubflowEvent(EvflReader reader) : base(reader)
         {
             NextEventIndex = reader.ReadUInt16();
             reader.BaseStream.Position += 2 + 2; // unused ushorts

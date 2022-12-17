@@ -15,7 +15,7 @@ namespace EvflLibrary.Core
             ForkEventIndicies = new();
         }
 
-        public ForkEvent(EvflReader reader, Event baseEvent) : base(baseEvent)
+        public ForkEvent(EvflReader reader) : base(reader)
         {
             ushort forkCount = reader.ReadUInt16();
             JoinEventIndex = reader.ReadUInt16();
