@@ -1,4 +1,4 @@
-# BfevLibrary
+# Bfev Library
 
 Nintendo **B**inary ca**f**e **Ev**ent **Fl**ow Libray | Based on [evfl](https://github.com/zeldamods/evfl) by [Léo Lam](https://github.com/leoetlino)
 
@@ -52,6 +52,21 @@ bfev.ToBinary(fs);
 ```cs
 BfevFile bfev = new("path/to/file.bfevfl");
 string json = bfev.ToJson(format: true);
+```
+
+### Install
+
+[![NuGet](https://img.shields.io/nuget/v/BfevLibrary.svg)](https://www.nuget.org/packages/BfevLibrary) [![NuGet](https://img.shields.io/nuget/dt/BfevLibrary.svg)](https://www.nuget.org/packages/BfevLibrary)
+
+#### NuGet
+```powershell
+Install-Package BfevLibrary
+```
+
+#### Build From Source
+```batch
+git clone https://github.com/NCF-Library/BfevLibrary.git
+dotnet build BfevLibrary
 ```
 
 ### Credits
