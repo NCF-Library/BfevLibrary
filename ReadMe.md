@@ -6,51 +6,53 @@ Nintendo **B**inary ca**f**e **Ev**ent **Fl**ow Libray | Based on [evfl](https:/
 
 ### Usage
 
-**Read from a File Path**
+### Reading a Bfev File
+
 ```cs
-BfevFile bfev = new("path/to/file.bfevfl");
+// Read from a File Path
+BfevFile bfev = BfevFile.FromBinary("path/to/file.bfevfl");
 ```
 
-**Read from a byte[]**
 ```cs
-SarcFile sarc = new("D:/Botw/Update/content/Events/100enemy.sbeventpack");
-BfevFile bfev = new(sarc.Files["EventFlow/100enemy.bfevfl"]);
+// Read from a byte[]
+// Do not use with File.ReadAllBytes(), use
+// a Stream instead.
+SarcFile sarc = SarcFile.FromBinary("D:/Botw/Update/content/Events/100enemy.sbeventpack");
+BfevFile bfev = BfevFile.FromBinary(sarc["EventFlow/100enemy.bfevfl"]);
 ```
 
-**Read from a Stream**
 ```cs
+// Read from a Stream
 using FileStream fs = File.OpenRead("path/to/file.bfevfl");
 BfevFile bfev = new(fs);
 ```
 
-**Read from JSON**
 ```cs
+// Read from JSON
 string json = File.ReadAllText("path/to/file.bfevfl.json");
 BfevFile bfev = BfevFile.FromJson(json);
 ```
 
-**Write to a File Path**
+### Writing a Bfev File
+
 ```cs
-BfevFile bfev = new("path/to/file.bfevfl");
+// Write to a File Path
 bfev.ToBinary("path/to/file_out.bfevfl");
 ```
 
-**Write to a byte[]**
 ```cs
-BfevFile bfev = new("path/to/file.bfevfl");
+// Write to a byte[]
 byte[] data = bfev.ToBinary();
 ```
 
-**Write to a Stream**
 ```cs
-BfevFile bfev = new("path/to/file.bfevfl");
+// Write to a Stream
 using FileStream fs = File.Create("path/to/file_out.bfevfl");
 bfev.ToBinary(fs);
 ```
 
-**Write to Json**
 ```cs
-BfevFile bfev = new("path/to/file.bfevfl");
+// Write to Json
 string json = bfev.ToJson(format: true);
 ```
 
