@@ -8,8 +8,6 @@ namespace BfevLibrary
     public class BfevFile : BfevBase
     {
         public BfevFile() { }
-        public BfevFile(string file) : this(File.OpenRead(file)) { }
-        public BfevFile(byte[] data) : this(new MemoryStream(data)) { }
         public BfevFile(Stream stream) : base(stream) { }
 
         public static BfevFile FromBinary(byte[] data)
