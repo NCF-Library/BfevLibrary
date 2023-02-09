@@ -54,10 +54,10 @@ namespace BfevLibrary.Core
             Name = reader.ReadStringPtr();
 
             // Actors ptr (ulong)
-            Actors = new(reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)));
+            Actors = reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)).ToList();
 
             // Events ptr (ulong)
-            Events = new(reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(reader)));
+            Events = reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(reader)).ToList();
 
             // Entry points dictionary ptr (ulong), entry point ptr (ulong)
             EntryPoints = reader.ReadObjectPtr<RadixTree<EntryPoint>>(() => new(reader))!;
