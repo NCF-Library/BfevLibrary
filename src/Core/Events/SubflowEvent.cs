@@ -6,7 +6,7 @@ namespace BfevLibrary.Core
 {
     public class SubflowEvent : Event, IBfevDataBlock
     {
-        public short NextEventIndex { get; set; }
+        public short NextEventIndex { get; set; } = -1; 
         public Container? Parameters { get; set; }
         public string FlowchartName { get; set; }
         public string EntryPointName { get; set; }

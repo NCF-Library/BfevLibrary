@@ -6,7 +6,7 @@ namespace BfevLibrary.Core
 {
     public class ForkEvent : Event, IBfevDataBlock
     {
-        public short JoinEventIndex { get; set; }
+        public short JoinEventIndex { get; set; } = -1;
         public List<short> ForkEventIndicies { get; set; }
 
         [JsonConstructor]

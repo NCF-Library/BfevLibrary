@@ -6,7 +6,7 @@ namespace BfevLibrary.Core
 {
     public class JoinEvent : Event, IBfevDataBlock
     {
-        public short NextEventIndex { get; set; }
+        public short NextEventIndex { get; set; } = -1;
 
         [JsonIgnore]
         public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
