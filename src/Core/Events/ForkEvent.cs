@@ -46,7 +46,7 @@ public class ForkEvent : Event, IBfevDataBlock
 
     public override void AlterEventIndex(int index)
     {
-        if (index > JoinEventIndex) {
+        if (index < JoinEventIndex) {
             JoinEventIndex--;
         }
         else if (index == JoinEventIndex) {
@@ -54,7 +54,7 @@ public class ForkEvent : Event, IBfevDataBlock
         }
 
         for (int i = 0; i < ForkEventIndicies.Count; i++) {
-            if (index > ForkEventIndicies[i]) {
+            if (index < ForkEventIndicies[i]) {
                 ForkEventIndicies[i]--;
             }
             else if (index == ForkEventIndicies[i]) {

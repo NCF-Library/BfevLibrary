@@ -34,7 +34,7 @@ public class JoinEvent : Event, IBfevDataBlock
 
     public override void AlterEventIndex(int index)
     {
-        if (index > NextEventIndex) {
+        if (index < NextEventIndex) {
             NextEventIndex--;
         }
         else if (index == NextEventIndex) {

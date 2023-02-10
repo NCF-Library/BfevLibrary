@@ -81,7 +81,7 @@ public class SwitchEvent : Event, IBfevDataBlock
 
     public override void AlterActorIndex(int index)
     {
-        if (index > ActorIndex) {
+        if (index < ActorIndex) {
             ActorIndex--;
         }
         else if (index == ActorIndex) {
@@ -92,7 +92,7 @@ public class SwitchEvent : Event, IBfevDataBlock
     public override void AlterEventIndex(int index)
     {
         for (int i = 0; i < SwitchCases.Count; i++) {
-            if (index > SwitchCases[i].EventIndex) {
+            if (index < SwitchCases[i].EventIndex) {
                 SwitchCases[i].EventIndex--;
             }
             else if (index == SwitchCases[i].EventIndex) {
@@ -106,7 +106,7 @@ public class SwitchEvent : Event, IBfevDataBlock
     {
         List<int> indices = new();
         foreach (var switchCase in SwitchCases) {
-            if (_parent!.Events.Count < switchCase.EventIndex) {
+            if (_parent!.Events.Count > switchCase.EventIndex) {
                 indices.Add(switchCase.EventIndex);
                 indices.AddRange(_parent!.Events[switchCase.EventIndex].GetChildIndices());
             }

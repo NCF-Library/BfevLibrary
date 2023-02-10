@@ -55,7 +55,7 @@ public class ActionEvent : Event, IBfevDataBlock
 
     public override void AlterActorIndex(int index)
     {
-        if (index > ActorIndex) {
+        if (index < ActorIndex) {
             ActorIndex--;
         }
         else if (index == ActorIndex) {
@@ -65,7 +65,7 @@ public class ActionEvent : Event, IBfevDataBlock
 
     public override void AlterEventIndex(int index)
     {
-        if (index > NextEventIndex) {
+        if (index < NextEventIndex) {
             NextEventIndex--;
         }
         else if (index == NextEventIndex) {
