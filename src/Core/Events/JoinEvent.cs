@@ -8,6 +8,10 @@ namespace BfevLibrary.Core
     {
         public short NextEventIndex { get; set; }
 
+        [JsonIgnore]
+        public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
+        public string? NextEventName => NextEvent?.Name;
+
         [JsonConstructor]
         public JoinEvent(string name) : base(name, EventType.Join) { }
         public JoinEvent(BfevReader reader) : base(reader)

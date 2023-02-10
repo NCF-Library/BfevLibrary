@@ -13,6 +13,10 @@ namespace BfevLibrary.Core
         public Container? Parameters { get; set; }
         public List<SwitchCase> SwitchCases { get; set; }
 
+        [JsonIgnore]
+        public Actor? Actor => ActorIndex > -1 ? _parent?.Actors[ActorIndex] : null;
+        public string? ActorName => Actor?.Name;
+
         [JsonConstructor]
         public SwitchEvent(string name) : base(name, EventType.Switch)
         {

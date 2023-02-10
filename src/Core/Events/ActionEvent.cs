@@ -11,6 +11,14 @@ namespace BfevLibrary.Core
         public short ActorActionIndex { get; set; }
         public Container? Parameters { get; set; }
 
+        [JsonIgnore]
+        public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
+        public string? NextEventName => NextEvent?.Name;
+
+        [JsonIgnore]
+        public Actor? Actor => ActorIndex > -1 ? _parent?.Actors[ActorIndex] : null;
+        public string? ActorName => Actor?.Name;
+
         [JsonConstructor]
         public ActionEvent(string name) : base(name, EventType.Action)
         {

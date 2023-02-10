@@ -11,6 +11,10 @@ namespace BfevLibrary.Core
         public string FlowchartName { get; set; }
         public string EntryPointName { get; set; }
 
+        [JsonIgnore]
+        public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
+        public string? NextEventName => NextEvent?.Name;
+
         [JsonConstructor]
         public SubflowEvent(string name) : base(name, EventType.Subflow)
         {
