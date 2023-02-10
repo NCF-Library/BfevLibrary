@@ -3,68 +3,67 @@ using BfevLibrary.Core.Collections;
 using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
-namespace BfevLibrary.Core
+namespace BfevLibrary.Core;
+
+public enum EventType
 {
-    public enum EventType
+    Action, Switch, Fork, Join, Subflow
+}
+
+[JsonConverter(typeof(EventConverter))]
+public abstract class Event : BfevListItem, IBfevDataBlock
+{
+    public string Name { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public EventType Type { get; set; }
+
+    /// <summary></summary>
+    /// <returns>
+    /// An <see cref="Event"/> sub-class instance defined by the read <see cref="EventType"/>.
+    /// </returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public static Event LoadTypeInstance(Flowchart parent, BfevReader reader)
     {
-        Action, Switch, Fork, Join, Subflow
+        // Read event type ahead
+        EventType type = reader.TemporarySeek(8, SeekOrigin.Current, () => (EventType)reader.ReadByte());
+
+        Event result = type switch {
+            EventType.Action => new ActionEvent(reader),
+            EventType.Switch => new SwitchEvent(reader),
+            EventType.Fork => new ForkEvent(reader),
+            EventType.Join => new JoinEvent(reader),
+            EventType.Subflow => new SubflowEvent(reader),
+            _ => throw new NotImplementedException()
+        };
+
+        result._parent = parent;
+        return result;
     }
 
-    [JsonConverter(typeof(EventConverter))]
-    public abstract class Event : BfevListItem, IBfevDataBlock
+    public IBfevDataBlock Read(BfevReader reader)
     {
-        public string Name { get; set; }
+        Name = reader.ReadStringPtr();
+        Type = (EventType)reader.ReadByte();
+        reader.BaseStream.Position += 1;
+        return this;
+    }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public EventType Type { get; set; }
+    public void Write(BfevWriter writer)
+    {
+        writer.WriteStringPtr(Name);
+        writer.Write((byte)Type);
+        writer.Seek(1, SeekOrigin.Current); // Padding (byte)
+    }
 
-        /// <summary></summary>
-        /// <returns>
-        /// An <see cref="Event"/> sub-class instance defined by the read <see cref="EventType"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static Event LoadTypeInstance(Flowchart parent, BfevReader reader)
-        {
-            // Read event type ahead
-            EventType type = reader.TemporarySeek(8, SeekOrigin.Current, () => (EventType)reader.ReadByte());
+    public Event(string name, EventType type)
+    {
+        Name = name;
+        Type = type;
+    }
 
-            Event result = type switch {
-                EventType.Action => new ActionEvent(reader),
-                EventType.Switch => new SwitchEvent(reader),
-                EventType.Fork => new ForkEvent(reader),
-                EventType.Join => new JoinEvent(reader),
-                EventType.Subflow => new SubflowEvent(reader),
-                _ => throw new NotImplementedException()
-            };
-
-            result._parent = parent;
-            return result;
-        }
-
-        public IBfevDataBlock Read(BfevReader reader)
-        {
-            Name = reader.ReadStringPtr();
-            Type = (EventType)reader.ReadByte();
-            reader.BaseStream.Position += 1;
-            return this;
-        }
-
-        public void Write(BfevWriter writer)
-        {
-            writer.WriteStringPtr(Name);
-            writer.Write((byte)Type);
-            writer.Seek(1, SeekOrigin.Current); // Padding (byte)
-        }
-
-        public Event(string name, EventType type)
-        {
-            Name = name;
-            Type = type;
-        }
-
-        internal Event(BfevReader reader)
-        {
-            Read(reader);
-        }
+    internal Event(BfevReader reader)
+    {
+        Read(reader);
     }
 }

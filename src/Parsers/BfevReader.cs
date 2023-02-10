@@ -1,102 +1,101 @@
 ﻿using System.Text;
 
-namespace BfevLibrary.Parsers
+namespace BfevLibrary.Parsers;
+
+public class BfevReader : BinaryReader
 {
-    public class BfevReader : BinaryReader
+    public BfevReader(Stream stream) : base(stream) { }
+
+    /// <summary>
+    /// Aligns the stream to <paramref name="align"/> bytes
+    /// </summary>
+    public void Align(int align)
     {
-        public BfevReader(Stream stream) : base(stream) { }
+        BaseStream.Position = (BaseStream.Position + align - 1) & -align;
+    }
 
-        /// <summary>
-        /// Aligns the stream to <paramref name="align"/> bytes
-        /// </summary>
-        public void Align(int align)
-        {
-            BaseStream.Position = (BaseStream.Position + align - 1) & -align;
+    public T? ReadObjectPtr<T>(Func<T> read, long? offset = null)
+    {
+        offset ??= ReadInt64();
+        if (offset > 0) {
+            return TemporarySeek<T>((long)offset, SeekOrigin.Begin, read);
         }
 
-        public T? ReadObjectPtr<T>(Func<T> read, long? offset = null)
-        {
-            offset ??= ReadInt64();
-            if (offset > 0) {
-                return TemporarySeek<T>((long)offset, SeekOrigin.Begin, read);
-            }
+        return default;
+    }
 
-            return default;
+    public T[] ReadObjects<T>(T[] objects, Func<T> read)
+    {
+        for (int i = 0; i < objects.Length; i++) {
+            objects[i] = read();
         }
 
-        public T[] ReadObjects<T>(T[] objects, Func<T> read)
-        {
-            for (int i = 0; i < objects.Length; i++) {
-                objects[i] = read();
-            }
+        return objects;
+    }
 
-            return objects;
-        }
-
-        public T[] ReadObjectsPtr<T>(T[] objects, Func<T> read, long? offset = null)
-        {
-            offset ??= ReadInt64();
-            if (offset > 0) {
-                TemporarySeek((long)offset, SeekOrigin.Begin, () => {
-                    for (int i = 0; i < objects.Length; i++) {
-                        objects[i] = read();
-                    }
-                });
-            }
-
-            return objects;
-        }
-
-        public T[] ReadObjectOffsetsPtr<T>(T[] objects, Func<T> read, long? offsetsPtr = null)
-        {
-            offsetsPtr ??= ReadInt64();
-            TemporarySeek((long)offsetsPtr, SeekOrigin.Begin, () => {
+    public T[] ReadObjectsPtr<T>(T[] objects, Func<T> read, long? offset = null)
+    {
+        offset ??= ReadInt64();
+        if (offset > 0) {
+            TemporarySeek((long)offset, SeekOrigin.Begin, () => {
                 for (int i = 0; i < objects.Length; i++) {
-                    long offset = ReadInt64();
-                    objects[i] = TemporarySeek<T>(offset, SeekOrigin.Begin, read);
+                    objects[i] = read();
                 }
             });
-
-            return objects;
         }
 
-        public string ReadStringPtr()
-        {
-            return new(TemporarySeek(ReadInt64(), SeekOrigin.Begin, () => {
-                ushort size = ReadUInt16();
-                return Encoding.UTF8.GetString(ReadBytes(size));
-            }));
-        }
+        return objects;
+    }
 
-        public string ReadStringAtOffset(uint offset)
-        {
-            return new(TemporarySeek(offset, SeekOrigin.Begin, () => {
-                ushort size = ReadUInt16();
-                return Encoding.UTF8.GetString(ReadBytes(size));
-            }));
-        }
+    public T[] ReadObjectOffsetsPtr<T>(T[] objects, Func<T> read, long? offsetsPtr = null)
+    {
+        offsetsPtr ??= ReadInt64();
+        TemporarySeek((long)offsetsPtr, SeekOrigin.Begin, () => {
+            for (int i = 0; i < objects.Length; i++) {
+                long offset = ReadInt64();
+                objects[i] = TemporarySeek<T>(offset, SeekOrigin.Begin, read);
+            }
+        });
 
-        public void TemporarySeek(long position, SeekOrigin origin, Action read)
-        {
-            long initPos = BaseStream.Position;
-            BaseStream.Seek(position, origin);
-            read();
-            BaseStream.Position = initPos;
-        }
+        return objects;
+    }
 
-        public T TemporarySeek<T>(long position, SeekOrigin origin, Func<T> read)
-        {
-            long initPos = BaseStream.Position;
-            BaseStream.Seek(position, origin);
-            T readResults = read();
-            BaseStream.Position = initPos;
-            return readResults;
-        }
+    public string ReadStringPtr()
+    {
+        return new(TemporarySeek(ReadInt64(), SeekOrigin.Begin, () => {
+            ushort size = ReadUInt16();
+            return Encoding.UTF8.GetString(ReadBytes(size));
+        }));
+    }
 
-        public bool CheckMagic(string magic, bool throwException = true)
-        {
-            string foundMagic = new(ReadChars(magic.Length));
-            return foundMagic == magic || (throwException ? throw new InvalidDataException($"Invalid magic. The parser found '{foundMagic}' instead of '{magic}'") : false);
-        }
+    public string ReadStringAtOffset(uint offset)
+    {
+        return new(TemporarySeek(offset, SeekOrigin.Begin, () => {
+            ushort size = ReadUInt16();
+            return Encoding.UTF8.GetString(ReadBytes(size));
+        }));
+    }
+
+    public void TemporarySeek(long position, SeekOrigin origin, Action read)
+    {
+        long initPos = BaseStream.Position;
+        BaseStream.Seek(position, origin);
+        read();
+        BaseStream.Position = initPos;
+    }
+
+    public T TemporarySeek<T>(long position, SeekOrigin origin, Func<T> read)
+    {
+        long initPos = BaseStream.Position;
+        BaseStream.Seek(position, origin);
+        T readResults = read();
+        BaseStream.Position = initPos;
+        return readResults;
+    }
+
+    public bool CheckMagic(string magic, bool throwException = true)
+    {
+        string foundMagic = new(ReadChars(magic.Length));
+        return foundMagic == magic || (throwException ? throw new InvalidDataException($"Invalid magic. The parser found '{foundMagic}' instead of '{magic}'") : false);
     }
 }

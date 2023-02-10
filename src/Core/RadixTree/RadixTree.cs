@@ -1,63 +1,62 @@
 ﻿using BfevLibrary.Common;
 using BfevLibrary.Parsers;
 
-namespace BfevLibrary.Core
+namespace BfevLibrary.Core;
+
+public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
 {
-    public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
+    internal string[] StaticKeys = Array.Empty<string>();
+
+    // internal Dictionary<string, T> Values = new();
+    // public int Count => Values.Count;
+
+    public T this[int index] {
+        get => this[StaticKeys[index]];
+    }
+
+    public RadixTree() { }
+    public RadixTree(BfevReader reader, T[]? array = null)
     {
-        internal string[] StaticKeys = Array.Empty<string>();
+        Read(reader);
 
-        // internal Dictionary<string, T> Values = new();
-        // public int Count => Values.Count;
+        if (array != null) {
+            LinkToArray(array);
+        }
+    }
 
-        public T this[int index] {
-            get => this[StaticKeys[index]];
+    public void LinkToArray(T[] array)
+    {
+        if (array.Length != StaticKeys.Length) {
+            throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.",
+                new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {StaticKeys.Length}.")
+            );
         }
 
-        public RadixTree() { }
-        public RadixTree(BfevReader reader, T[]? array = null)
-        {
-            Read(reader);
-
-            if (array != null) {
-                LinkToArray(array);
+        try {
+            for (int i = 0; i < array.Length; i++) {
+                Add(StaticKeys[i], array[i]);
             }
         }
+        catch { }
+    }
 
-        public void LinkToArray(T[] array)
-        {
-            if (array.Length != StaticKeys.Length) {
-                throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.",
-                    new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {StaticKeys.Length}.")
-                );
-            }
+    public IBfevDataBlock Read(BfevReader reader)
+    {
+        reader.CheckMagic(RadixTreeWriter.Magic);
+        int count = reader.ReadInt32();
+        reader.BaseStream.Position += 4 + 2 + 2 + 8; // Root entry
 
-            try {
-                for (int i = 0; i < array.Length; i++) {
-                    Add(StaticKeys[i], array[i]);
-                }
-            }
-            catch { }
+        StaticKeys = new string[count];
+        for (int i = 0; i < count; i++) {
+            reader.BaseStream.Position += 4 + 2 + 2;
+            StaticKeys[i] = reader.ReadStringPtr();
         }
 
-        public IBfevDataBlock Read(BfevReader reader)
-        {
-            reader.CheckMagic(RadixTreeWriter.Magic);
-            int count = reader.ReadInt32();
-            reader.BaseStream.Position += 4 + 2 + 2 + 8; // Root entry
+        return this;
+    }
 
-            StaticKeys = new string[count];
-            for (int i = 0; i < count; i++) {
-                reader.BaseStream.Position += 4 + 2 + 2;
-                StaticKeys[i] = reader.ReadStringPtr();
-            }
-
-            return this;
-        }
-
-        public void Write(BfevWriter writer)
-        {
-            RadixTreeHelper.WriteRadixTree(writer, Keys.ToArray());
-        }
+    public void Write(BfevWriter writer)
+    {
+        RadixTreeHelper.WriteRadixTree(writer, Keys.ToArray());
     }
 }

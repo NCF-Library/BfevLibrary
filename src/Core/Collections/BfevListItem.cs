@@ -1,7 +1,6 @@
-﻿namespace BfevLibrary.Core.Collections
+﻿namespace BfevLibrary.Core.Collections;
+
+public abstract class BfevListItem
 {
-    public abstract class BfevListItem
-    {
-        internal Flowchart? _parent;
-    }
+    internal Flowchart? _parent;
 }

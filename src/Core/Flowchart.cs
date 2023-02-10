@@ -2,107 +2,106 @@
 using BfevLibrary.Core.Collections;
 using BfevLibrary.Parsers;
 
-namespace BfevLibrary.Core
+namespace BfevLibrary.Core;
+
+public class Flowchart : IBfevDataBlock
 {
-    public class Flowchart : IBfevDataBlock
+    public const string Magic = "EVFL";
+
+    public string Name { get; set; }
+    public BfevList<Actor> Actors { get; set; }
+    public BfevList<Event> Events { get; set; }
+    public RadixTree<EntryPoint> EntryPoints { get; set; }
+
+    public Flowchart()
     {
-        public const string Magic = "EVFL";
+        Actors = new(this);
+        Events = new(this);
+        EntryPoints = new();
+    }
 
-        public string Name { get; set; }
-        public BfevList<Actor> Actors { get; set; }
-        public BfevList<Event> Events { get; set; }
-        public RadixTree<EntryPoint> EntryPoints { get; set; }
+    public Flowchart(string name) : this()
+    {
+        Name = name;
+    }
 
-        public Flowchart()
-        {
-            Actors = new(this);
-            Events = new(this);
-            EntryPoints = new();
-        }
+    public Flowchart(BfevReader reader)
+    {
+        Read(reader);
+    }
 
-        public Flowchart(string name) : this()
-        {
-            Name = name;
-        }
+    public IBfevDataBlock Read(BfevReader reader)
+    {
+        // Check the file magic
+        reader.CheckMagic(Magic);
 
-        public Flowchart(BfevReader reader)
-        {
-            Read(reader);
-        }
+        // String pool offset (uint), Padding (long)
+        reader.BaseStream.Position += 4 + 8;
 
-        public IBfevDataBlock Read(BfevReader reader)
-        {
-            // Check the file magic
-            reader.CheckMagic(Magic);
+        // Actor count (ushort)
+        ushort actorCount = reader.ReadUInt16();
 
-            // String pool offset (uint), Padding (long)
-            reader.BaseStream.Position += 4 + 8;
+        // Total action count (ushort), total query count (ushort)
+        reader.BaseStream.Position += 2 + 2;
 
-            // Actor count (ushort)
-            ushort actorCount = reader.ReadUInt16();
+        // Event count (ushort), entry point count (ushort)
+        ushort eventCount = reader.ReadUInt16();
+        ushort entryPointCount = reader.ReadUInt16();
 
-            // Total action count (ushort), total query count (ushort)
-            reader.BaseStream.Position += 2 + 2;
+        // Padding (byte[6])
+        reader.BaseStream.Position += 6;
 
-            // Event count (ushort), entry point count (ushort)
-            ushort eventCount = reader.ReadUInt16();
-            ushort entryPointCount = reader.ReadUInt16();
+        // Name ptr (ulong)
+        Name = reader.ReadStringPtr();
 
-            // Padding (byte[6])
-            reader.BaseStream.Position += 6;
+        // Actors ptr (ulong)
+        Actors = new(this, reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)));
 
-            // Name ptr (ulong)
-            Name = reader.ReadStringPtr();
+        // Events ptr (ulong)
+        Events = new(this, reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(this, reader)));
 
-            // Actors ptr (ulong)
-            Actors = new(this, reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)));
+        // Entry points dictionary ptr (ulong), entry point ptr (ulong)
+        EntryPoints = reader.ReadObjectPtr<RadixTree<EntryPoint>>(() => new(reader))!;
+        EntryPoints.LinkToArray(reader.ReadObjectsPtr(new EntryPoint[entryPointCount], () => new(reader)));
 
-            // Events ptr (ulong)
-            Events = new(this, reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(this, reader)));
+        return this;
+    }
 
-            // Entry points dictionary ptr (ulong), entry point ptr (ulong)
-            EntryPoints = reader.ReadObjectPtr<RadixTree<EntryPoint>>(() => new(reader))!;
-            EntryPoints.LinkToArray(reader.ReadObjectsPtr(new EntryPoint[entryPointCount], () => new(reader)));
+    public void Write(BfevWriter writer)
+    {
+        writer.WriteReserved("insertFlowchartsOffsets");
+        writer.WriteReserved("insertFirstBlockOffset", remove: true);
+        writer.Write(Magic.AsSpan());
+        writer.ReserveRelativeOffset("insertFlowchartStringPoolOffset", writer.BaseStream.Position - 4);
+        writer.Write(0L); // Padding
+        writer.Write((ushort)Actors.Count);
+        writer.Write((ushort)Actors.Sum(x => x.Actions.Count));
+        writer.Write((ushort)Actors.Sum(x => x.Queries.Count));
+        writer.Write((ushort)Events.Count);
+        writer.Write((ushort)EntryPoints.Count);
+        writer.Write(new byte[6]); // Padding
+        writer.WriteStringPtr(Name);
+        Action insertActorsPtr = writer.ReservePtrIf(Actors.Count > 0, register: true);
+        Action insertEventsPtr = writer.ReservePtrIf(Events.Count > 0, register: true);
+        Action insertEntryPointsDictPtr = writer.ReservePtr();
+        Action insertEntryPointsPtr = writer.ReservePtrIf(EntryPoints.Count > 0, register: true);
 
-            return this;
-        }
+        insertActorsPtr();
+        writer.WriteObjects(Actors);
 
-        public void Write(BfevWriter writer)
-        {
-            writer.WriteReserved("insertFlowchartsOffsets");
-            writer.WriteReserved("insertFirstBlockOffset", remove: true);
-            writer.Write(Magic.AsSpan());
-            writer.ReserveRelativeOffset("insertFlowchartStringPoolOffset", writer.BaseStream.Position - 4);
-            writer.Write(0L); // Padding
-            writer.Write((ushort)Actors.Count);
-            writer.Write((ushort)Actors.Sum(x => x.Actions.Count));
-            writer.Write((ushort)Actors.Sum(x => x.Queries.Count));
-            writer.Write((ushort)Events.Count);
-            writer.Write((ushort)EntryPoints.Count);
-            writer.Write(new byte[6]); // Padding
-            writer.WriteStringPtr(Name);
-            Action insertActorsPtr = writer.ReservePtrIf(Actors.Count > 0, register: true);
-            Action insertEventsPtr = writer.ReservePtrIf(Events.Count > 0, register: true);
-            Action insertEntryPointsDictPtr = writer.ReservePtr();
-            Action insertEntryPointsPtr = writer.ReservePtrIf(EntryPoints.Count > 0, register: true);
+        insertEventsPtr();
+        writer.WriteObjects(Events);
 
-            insertActorsPtr();
-            writer.WriteObjects(Actors);
+        insertEntryPointsDictPtr();
+        writer.WriteRadixTree(EntryPoints.Keys.ToArray());
+        writer.Align(8);
 
-            insertEventsPtr();
-            writer.WriteObjects(Events);
+        insertEntryPointsPtr();
+        writer.WriteObjects(EntryPoints.Values);
 
-            insertEntryPointsDictPtr();
-            writer.WriteRadixTree(EntryPoints.Keys.ToArray());
-            writer.Align(8);
-
-            insertEntryPointsPtr();
-            writer.WriteObjects(EntryPoints.Values);
-
-            writer.WriteReserved("EventArrayDataBlock", alignment: 8);
-            writer.WriteReserved("ActorArrayDataBlock", alignment: 8);
-            writer.WriteReserved("EntryPointArrayDataBlock", alignment: 8);
-            writer.Align(8);
-        }
+        writer.WriteReserved("EventArrayDataBlock", alignment: 8);
+        writer.WriteReserved("ActorArrayDataBlock", alignment: 8);
+        writer.WriteReserved("EntryPointArrayDataBlock", alignment: 8);
+        writer.Align(8);
     }
 }
