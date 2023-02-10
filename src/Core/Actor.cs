@@ -1,11 +1,11 @@
 ﻿using BfevLibrary.Common;
+using BfevLibrary.Core.Collections;
 using BfevLibrary.Parsers;
 
 namespace BfevLibrary.Core
 {
-    public class Actor : IBfevDataBlock
+    public class Actor : BfevListItem, IBfevDataBlock
     {
-        internal Flowchart? _parent;
         internal Action? insertActionsPtr = null;
         internal Action? insertQueriesPtr = null;
         internal Action? insertParamsPtr = null;

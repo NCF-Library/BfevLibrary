@@ -1,4 +1,5 @@
 ﻿using BfevLibrary.Common;
+using BfevLibrary.Core.Collections;
 using BfevLibrary.Parsers;
 using System.Text.Json.Serialization;
 
@@ -10,10 +11,8 @@ namespace BfevLibrary.Core
     }
 
     [JsonConverter(typeof(EventConverter))]
-    public abstract class Event : IBfevDataBlock
+    public abstract class Event : BfevListItem, IBfevDataBlock
     {
-        internal Flowchart? _parent;
-
         public string Name { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]

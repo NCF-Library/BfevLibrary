@@ -1,4 +1,5 @@
 ﻿using BfevLibrary.Common;
+using BfevLibrary.Core.Collections;
 using BfevLibrary.Parsers;
 
 namespace BfevLibrary.Core
@@ -8,14 +9,14 @@ namespace BfevLibrary.Core
         public const string Magic = "EVFL";
 
         public string Name { get; set; }
-        public List<Actor> Actors { get; set; }
-        public List<Event> Events { get; set; }
+        public BfevList<Actor> Actors { get; set; }
+        public BfevList<Event> Events { get; set; }
         public RadixTree<EntryPoint> EntryPoints { get; set; }
 
         public Flowchart()
         {
-            Actors = new();
-            Events = new();
+            Actors = new(this);
+            Events = new(this);
             EntryPoints = new();
         }
 
@@ -27,18 +28,6 @@ namespace BfevLibrary.Core
         public Flowchart(BfevReader reader)
         {
             Read(reader);
-        }
-
-        public void AddActor(Actor actor)
-        {
-            actor._parent = this;
-            Actors.Add(actor);
-        }
-
-        public void AddEvent(Event @event)
-        {
-            @event._parent = this;
-            Events.Add(@event);
         }
 
         public IBfevDataBlock Read(BfevReader reader)
@@ -66,10 +55,10 @@ namespace BfevLibrary.Core
             Name = reader.ReadStringPtr();
 
             // Actors ptr (ulong)
-            Actors = reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)).ToList();
+            Actors = new(this, reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)));
 
             // Events ptr (ulong)
-            Events = reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(this, reader)).ToList();
+            Events = new(this, reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(this, reader)));
 
             // Entry points dictionary ptr (ulong), entry point ptr (ulong)
             EntryPoints = reader.ReadObjectPtr<RadixTree<EntryPoint>>(() => new(reader))!;
