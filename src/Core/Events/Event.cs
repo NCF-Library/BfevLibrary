@@ -12,7 +12,7 @@ namespace BfevLibrary.Core
     [JsonConverter(typeof(EventConverter))]
     public abstract class Event : IBfevDataBlock
     {
-        private protected Flowchart? _parent;
+        internal Flowchart? _parent;
 
         public string Name { get; set; }
 
