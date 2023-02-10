@@ -46,4 +46,14 @@ public class SubflowEvent : Event, IBfevDataBlock
             }
         });
     }
+
+    public override void AlterEventIndex(int index)
+    {
+        if (index > NextEventIndex) {
+            NextEventIndex--;
+        }
+        else if (index == NextEventIndex) {
+            NextEventIndex = -1;
+        }
+    }
 }

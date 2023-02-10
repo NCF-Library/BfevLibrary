@@ -31,4 +31,14 @@ public class JoinEvent : Event, IBfevDataBlock
         writer.Write(0L);
         writer.Write(0L);
     }
+
+    public override void AlterEventIndex(int index)
+    {
+        if (index > NextEventIndex) {
+            NextEventIndex--;
+        }
+        else if (index == NextEventIndex) {
+            NextEventIndex = -1;
+        }
+    }
 }

@@ -77,4 +77,27 @@ public class SwitchEvent : Event, IBfevDataBlock
             }
         });
     }
+
+    public override void AlterActorIndex(int index)
+    {
+        if (index > ActorIndex) {
+            ActorIndex--;
+        }
+        else if (index == ActorIndex) {
+            ActorIndex = -1;
+        }
+    }
+
+    public override void AlterEventIndex(int index)
+    {
+        for (int i = 0; i < SwitchCases.Count; i++) {
+            if (index > SwitchCases[i].EventIndex) {
+                SwitchCases[i].EventIndex--;
+            }
+            else if (index == SwitchCases[i].EventIndex) {
+                SwitchCases.RemoveAt(i);
+                i--;
+            }
+        }
+    }
 }

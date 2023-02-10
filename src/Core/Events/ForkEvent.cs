@@ -43,4 +43,24 @@ public class ForkEvent : Event, IBfevDataBlock
             }
         });
     }
+
+    public override void AlterEventIndex(int index)
+    {
+        if (index > JoinEventIndex) {
+            JoinEventIndex--;
+        }
+        else if (index == JoinEventIndex) {
+            JoinEventIndex = -1;
+        }
+
+        for (int i = 0; i < ForkEventIndicies.Count; i++) {
+            if (index > ForkEventIndicies[i]) {
+                ForkEventIndicies[i]--;
+            }
+            else if (index == ForkEventIndicies[i]) {
+                ForkEventIndicies.RemoveAt(i);
+                i--;
+            }
+        }
+    }
 }

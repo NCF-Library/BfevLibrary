@@ -52,4 +52,24 @@ public class ActionEvent : Event, IBfevDataBlock
             }
         });
     }
+
+    public override void AlterActorIndex(int index)
+    {
+        if (index > ActorIndex) {
+            ActorIndex--;
+        }
+        else if (index == ActorIndex) {
+            ActorIndex = -1;
+        }
+    }
+
+    public override void AlterEventIndex(int index)
+    {
+        if (index > NextEventIndex) {
+            NextEventIndex--;
+        }
+        else if (index == NextEventIndex) {
+            NextEventIndex = -1;
+        }
+    }
 }

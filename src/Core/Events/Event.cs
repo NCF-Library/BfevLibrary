@@ -56,6 +56,9 @@ public abstract class Event : BfevListItem, IBfevDataBlock
         writer.Seek(1, SeekOrigin.Current); // Padding (byte)
     }
 
+    public virtual void AlterActorIndex(int index) { }
+    public virtual void AlterEventIndex(int index) { }
+
     public Event(string name, EventType type)
     {
         Name = name;
