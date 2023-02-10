@@ -45,7 +45,7 @@ namespace Tests
             Stopwatch watch = Stopwatch.StartNew();
             long mark;
 
-            BfevFile bfev = new(data);
+            BfevFile bfev = BfevFile.FromBinary(data);
             mark = watch.ElapsedMilliseconds;
             timestamps.Add($"Parse {data.Length}", mark);
             watch.Restart();
