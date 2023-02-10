@@ -7,8 +7,8 @@ namespace BfevLibrary.Core
     public class ActionEvent : Event, IBfevDataBlock
     {
         public short NextEventIndex { get; set; } = -1;
-        public short ActorIndex { get; set; } = -1;
-        public short ActorActionIndex { get; set; } = -1;
+        public short ActorIndex { get; set; }
+        public short ActorActionIndex { get; set; }
         public Container? Parameters { get; set; }
 
         [JsonIgnore]
