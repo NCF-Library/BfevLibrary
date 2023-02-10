@@ -6,7 +6,17 @@ namespace BfevLibrary.Core
 {
     public class SwitchEvent : Event, IBfevDataBlock
     {
-        public record SwitchCase(int Value, short EventIndex);
+        public class SwitchCase
+        {
+            public int Value { get; set; }
+            public ushort EventIndex { get; set; }
+
+            public SwitchCase(int value, ushort eventIndex)
+            {
+                Value = value;
+                EventIndex = eventIndex;
+            }
+        }
 
         public short ActorIndex { get; set; }
         public short ActorQueryIndex { get; set; }
@@ -31,7 +41,7 @@ namespace BfevLibrary.Core
             ActorQueryIndex = reader.ReadInt16();
             Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
             SwitchCases = reader.ReadObjectsPtr(new SwitchCase[switchCaseCount], () => {
-                SwitchCase switchCase = new(reader.ReadInt32(), reader.ReadInt16());
+                SwitchCase switchCase = new(reader.ReadInt32(), reader.ReadUInt16());
                 reader.ReadInt16();
                 reader.Align(8);
                 return switchCase;
