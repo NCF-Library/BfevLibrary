@@ -101,4 +101,17 @@ public class SwitchEvent : Event, IBfevDataBlock
             }
         }
     }
+
+    internal override List<int> GetChildIndices()
+    {
+        List<int> indices = new();
+        foreach (var switchCase in SwitchCases) {
+            if (_parent!.Events.Count < switchCase.EventIndex) {
+                indices.Add(switchCase.EventIndex);
+                indices.AddRange(_parent!.Events[switchCase.EventIndex].GetChildIndices());
+            }
+        }
+
+        return indices;
+    }
 }

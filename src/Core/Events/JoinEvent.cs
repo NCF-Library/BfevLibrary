@@ -41,4 +41,15 @@ public class JoinEvent : Event, IBfevDataBlock
             NextEventIndex = -1;
         }
     }
+
+    internal override List<int> GetChildIndices()
+    {
+        List<int> indices = new();
+        if (NextEventIndex > -1) {
+            indices.Add(NextEventIndex);
+            indices.AddRange(_parent!.Events[NextEventIndex].GetChildIndices());
+        }
+
+        return indices;
+    }
 }

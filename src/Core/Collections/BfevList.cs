@@ -19,6 +19,20 @@ public class BfevList<T> : ObservableCollection<T> where T : BfevListItem
         CollectionChanged += BfevList_CollectionChanged;
     }
 
+    public void Remove(T item, bool recursive) => RemoveInternal(item, IndexOf(item), recursive);
+    public void RemoveAt(int index, bool recursive) => RemoveInternal(this[index], index, recursive);
+    private void RemoveInternal(T item, int index, bool _)
+    {
+        RemoveAt(index);
+
+        if (item is Event @event) {
+            List<int> children = @event.GetChildIndices();
+            foreach (var child in children.Distinct().OrderDescending()) {
+                RemoveAt(child);
+            }
+        }
+    }
+
     private void BfevList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null) {
