@@ -6,7 +6,7 @@ namespace BfevLibrary.Core;
 public class EntryPoint : IBfevDataBlock
 {
     public List<ushort> SubFlowEventIndices { get; set; }
-    public ushort EventIndex { get; set; }
+    public short EventIndex { get; set; }
 
     public EntryPoint() { }
     public EntryPoint(BfevReader reader)
@@ -20,7 +20,7 @@ public class EntryPoint : IBfevDataBlock
         reader.BaseStream.Position += 8 + 8; // unused (in botw) VariableDef pointers (ulong, ulong)
         ushort subFlowEventIndicesCount = reader.ReadUInt16();
         reader.BaseStream.Position += 2; // unused (in botw) VariableDef count (ushort)
-        EventIndex = reader.ReadUInt16();
+        EventIndex = reader.ReadInt16();
         reader.BaseStream.Position += 2; // padding
         SubFlowEventIndices = reader.ReadObjectsPtr(new ushort[subFlowEventIndicesCount], () => reader.ReadUInt16(), subFlowEventIndicesPtr).ToList();
         return this;
