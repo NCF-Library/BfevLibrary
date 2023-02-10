@@ -29,6 +29,18 @@ namespace BfevLibrary.Core
             Read(reader);
         }
 
+        public void AddActor(Actor actor)
+        {
+            actor._parent = this;
+            Actors.Add(actor);
+        }
+
+        public void AddEvent(Event @event)
+        {
+            @event._parent = this;
+            Events.Add(@event);
+        }
+
         public IBfevDataBlock Read(BfevReader reader)
         {
             // Check the file magic
