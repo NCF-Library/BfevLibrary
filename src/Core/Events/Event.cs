@@ -12,6 +12,8 @@ namespace BfevLibrary.Core
     [JsonConverter(typeof(EventConverter))]
     public abstract class Event : IBfevDataBlock
     {
+        private protected Flowchart? _parent;
+
         public string Name { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -22,12 +24,12 @@ namespace BfevLibrary.Core
         /// An <see cref="Event"/> sub-class instance defined by the read <see cref="EventType"/>.
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static Event LoadTypeInstance(BfevReader reader)
+        public static Event LoadTypeInstance(Flowchart parent, BfevReader reader)
         {
             // Read event type ahead
             EventType type = reader.TemporarySeek(8, SeekOrigin.Current, () => (EventType)reader.ReadByte());
 
-            return type switch {
+            Event result = type switch {
                 EventType.Action => new ActionEvent(reader),
                 EventType.Switch => new SwitchEvent(reader),
                 EventType.Fork => new ForkEvent(reader),
@@ -35,6 +37,9 @@ namespace BfevLibrary.Core
                 EventType.Subflow => new SubflowEvent(reader),
                 _ => throw new NotImplementedException()
             };
+
+            result._parent = parent;
+            return result;
         }
 
         public IBfevDataBlock Read(BfevReader reader)

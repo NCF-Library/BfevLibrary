@@ -57,7 +57,7 @@ namespace BfevLibrary.Core
             Actors = reader.ReadObjectsPtr(new Actor[actorCount], () => new(reader)).ToList();
 
             // Events ptr (ulong)
-            Events = reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(reader)).ToList();
+            Events = reader.ReadObjectsPtr(new Event[eventCount], () => Event.LoadTypeInstance(this, reader)).ToList();
 
             // Entry points dictionary ptr (ulong), entry point ptr (ulong)
             EntryPoints = reader.ReadObjectPtr<RadixTree<EntryPoint>>(() => new(reader))!;
