@@ -9,8 +9,8 @@ public class Flowchart : IBfevDataBlock
     public const string Magic = "EVFL";
 
     public string Name { get; set; }
-    public BfevList<Actor> Actors { get; set; }
-    public BfevList<Event> Events { get; set; }
+    public ActorList Actors { get; set; }
+    public EventList Events { get; set; }
     public RadixTree<EntryPoint> EntryPoints { get; set; }
 
     public Flowchart()

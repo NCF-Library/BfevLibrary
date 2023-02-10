@@ -1,10 +1,9 @@
 ﻿using BfevLibrary.Common;
-using BfevLibrary.Core.Collections;
 using BfevLibrary.Parsers;
 
 namespace BfevLibrary.Core;
 
-public class Actor : BfevListItem, IBfevDataBlock
+public class Actor : IBfevDataBlock
 {
     internal Action? insertActionsPtr = null;
     internal Action? insertQueriesPtr = null;

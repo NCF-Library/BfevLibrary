@@ -11,8 +11,10 @@ public enum EventType
 }
 
 [JsonConverter(typeof(EventConverter))]
-public abstract class Event : BfevListItem, IBfevDataBlock
+public abstract class Event : IBfevDataBlock
 {
+    internal Flowchart? _parent;
+
     public string Name { get; set; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
