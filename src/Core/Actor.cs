@@ -5,6 +5,7 @@ namespace BfevLibrary.Core
 {
     public class Actor : IBfevDataBlock
     {
+        internal Flowchart? _parent;
         internal Action? insertActionsPtr = null;
         internal Action? insertQueriesPtr = null;
         internal Action? insertParamsPtr = null;
