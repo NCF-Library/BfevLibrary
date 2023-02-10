@@ -12,7 +12,7 @@ namespace BfevLibrary.Core
         public Container? Parameters { get; set; }
 
         [JsonConstructor]
-        public ActionEvent(string name, EventType type) : base(name, type)
+        public ActionEvent(string name) : base(name, EventType)
         {
             Parameters = new();
         }

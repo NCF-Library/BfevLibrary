@@ -14,7 +14,7 @@ namespace BfevLibrary.Core
         public List<SwitchCase> SwitchCases { get; set; }
 
         [JsonConstructor]
-        public SwitchEvent(string name, EventType type) : base(name, type)
+        public SwitchEvent(string name) : base(name, EventType.Switch)
         {
             Parameters = new();
             SwitchCases = new();

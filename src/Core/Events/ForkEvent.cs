@@ -10,7 +10,7 @@ namespace BfevLibrary.Core
         public List<short> ForkEventIndicies { get; set; }
 
         [JsonConstructor]
-        public ForkEvent(string name, EventType type) : base(name, type)
+        public ForkEvent(string name) : base(name, EventType.Fork)
         {
             ForkEventIndicies = new();
         }

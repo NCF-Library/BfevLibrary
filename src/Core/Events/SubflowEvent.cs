@@ -12,7 +12,7 @@ namespace BfevLibrary.Core
         public string EntryPointName { get; set; }
 
         [JsonConstructor]
-        public SubflowEvent(string name, EventType type) : base(name, type)
+        public SubflowEvent(string name) : base(name, EventType.Subflow)
         {
             Parameters = new();
         }
