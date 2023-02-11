@@ -29,8 +29,22 @@ public class BfevFile : BfevBase
 
     public static BfevFile FromJson(string json)
     {
-        return JsonSerializer.Deserialize<BfevFile>(json)
+        BfevFile result = JsonSerializer.Deserialize<BfevFile>(json)
             ?? throw new JsonException("Could not deserialize BfevFile from json data (parser returned null)");
+
+        // Updates the current event/actor flowchart
+        // parents post-deserialization becuase
+        // I don't know how to access a parent
+        // object in a custom json converter
+        if (result.Flowchart is Flowchart flowchart) {
+            flowchart.Actors._parent = flowchart;
+            flowchart.Events._parent = flowchart;
+            foreach (var @event in flowchart.Events) {
+                @event._parent = flowchart;
+            }
+        }
+
+        return result;
     }
 
     public byte[] ToBinary()
