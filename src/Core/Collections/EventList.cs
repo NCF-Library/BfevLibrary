@@ -1,11 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Text.Json.Serialization;
 
 namespace BfevLibrary.Core.Collections;
 
 public class EventList : ObservableCollection<Event>
 {
-    private readonly Flowchart _parent;
+    internal Flowchart _parent;
 
     public EventList(Flowchart parent)
     {
@@ -18,6 +19,9 @@ public class EventList : ObservableCollection<Event>
         _parent = parent;
         CollectionChanged += EventList_CollectionChanged;
     }
+
+    [JsonConstructor]
+    public EventList() => CollectionChanged += EventList_CollectionChanged;
 
     public void Remove(Event item, bool recursive) => RemoveInternal(item, IndexOf(item), recursive);
     public void RemoveAt(int index, bool recursive) => RemoveInternal(this[index], index, recursive);
