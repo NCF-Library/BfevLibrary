@@ -8,8 +8,8 @@ public class SubflowEvent : Event, IBfevDataBlock
 {
     public short NextEventIndex { get; set; } = -1;
     public Container? Parameters { get; set; }
-    public string FlowchartName { get; set; }
-    public string EntryPointName { get; set; }
+    public string FlowchartName { get; set; } = string.Empty;
+    public string EntryPointName { get; set; } = string.Empty;
 
     [JsonIgnore]
     public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
