@@ -26,10 +26,11 @@ public class EventList : ObservableCollection<Event>
         List<int> indices = new();
         item.GetChildIndices(indices);
 
-        RemoveAt(index);
         foreach (var child in indices.Distinct().OrderDescending()) {
             RemoveAt(child);
         }
+
+        RemoveAt(index-indices.Where(x => x <= index).Count());
     }
 
     private void EventList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
