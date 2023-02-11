@@ -8,7 +8,7 @@ Flowchart flowchart = evfl.Flowchart!;
 EventList events = flowchart.Events;
 
 events.RemoveAt(flowchart.EntryPoints["RandomGoal_Choose_no"].EventIndex, recursive: true);
-// evfl.Flowchart!.EntryPoints.Remove("RandomGoal_Choose_no");
+evfl.Flowchart!.EntryPoints.Remove("RandomGoal_Choose_no");
 
 byte[] data = evfl.ToBinary();
 File.WriteAllBytes("D:\\Bin\\AutoRRG\\new.bfevfl", data);
