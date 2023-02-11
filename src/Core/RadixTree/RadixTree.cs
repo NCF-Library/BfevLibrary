@@ -5,14 +5,7 @@ namespace BfevLibrary.Core;
 
 public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
 {
-    internal string[] StaticKeys = Array.Empty<string>();
-
-    // internal Dictionary<string, T> Values = new();
-    // public int Count => Values.Count;
-
-    public T this[int index] {
-        get => this[StaticKeys[index]];
-    }
+    internal string[] _staticKeys = Array.Empty<string>();
 
     public RadixTree() { }
     public RadixTree(BfevReader reader, T[]? array = null)
@@ -26,15 +19,15 @@ public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
 
     public void LinkToArray(T[] array)
     {
-        if (array.Length != StaticKeys.Length) {
+        if (array.Length != _staticKeys.Length) {
             throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.",
-                new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {StaticKeys.Length}.")
+                new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {_staticKeys.Length}.")
             );
         }
 
         try {
             for (int i = 0; i < array.Length; i++) {
-                Add(StaticKeys[i], array[i]);
+                Add(_staticKeys[i], array[i]);
             }
         }
         catch { }
@@ -46,10 +39,10 @@ public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
         int count = reader.ReadInt32();
         reader.BaseStream.Position += 4 + 2 + 2 + 8; // Root entry
 
-        StaticKeys = new string[count];
+        _staticKeys = new string[count];
         for (int i = 0; i < count; i++) {
             reader.BaseStream.Position += 4 + 2 + 2;
-            StaticKeys[i] = reader.ReadStringPtr();
+            _staticKeys[i] = reader.ReadStringPtr();
         }
 
         return this;

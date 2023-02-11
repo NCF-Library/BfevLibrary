@@ -14,10 +14,10 @@ public class BfevBase : IBfevDataBlock
     public RadixTree<Timeline> Timelines { get; set; }
 
     [JsonIgnore]
-    public Flowchart? Flowchart => Flowcharts.Count > 0 ? Flowcharts[0] : null;
+    public Flowchart? Flowchart => Flowcharts.Count > 0 ? Flowcharts.First().Value : null;
 
     [JsonIgnore]
-    public Timeline? Timeline => Timelines.Count > 0 ? Timelines[0] : null;
+    public Timeline? Timeline => Timelines.Count > 0 ? Timelines.First().Value : null;
 
     internal BfevBase()
     {

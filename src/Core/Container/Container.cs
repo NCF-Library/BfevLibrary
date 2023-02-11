@@ -40,7 +40,7 @@ public class Container : RadixTree<ContainerItem>, IBfevDataBlock
     public new IBfevDataBlock Read(BfevReader reader)
     {
         ContainerItem root = new(reader, isRoot: true);
-        StaticKeys = root.Items!.StaticKeys;
+        _staticKeys = root.Items!._staticKeys;
         LinkToArray(reader.ReadObjectOffsetsPtr(new ContainerItem[root.Count], () => new(reader), reader.BaseStream.Position));
 
         return this;
