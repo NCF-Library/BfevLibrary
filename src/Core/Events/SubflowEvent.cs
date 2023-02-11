@@ -57,14 +57,11 @@ public class SubflowEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override List<int> GetChildIndices()
+    internal override void GetChildIndices(List<int> indices)
     {
-        List<int> indices = new();
         if (NextEventIndex > -1) {
             indices.Add(NextEventIndex);
-            indices.AddRange(_parent!.Events[NextEventIndex].GetChildIndices());
+            _parent!.Events[NextEventIndex].GetChildIndices(indices);
         }
-
-        return indices;
     }
 }

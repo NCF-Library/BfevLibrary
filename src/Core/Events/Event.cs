@@ -60,7 +60,7 @@ public abstract class Event : IBfevDataBlock
 
     public virtual void AlterActorIndex(int index) { }
     public virtual void AlterEventIndex(int index) { }
-    internal abstract List<int> GetChildIndices();
+    internal abstract void GetChildIndices(List<int> indices);
 
     public Event(string name, EventType type)
     {

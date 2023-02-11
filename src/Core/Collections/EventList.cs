@@ -23,10 +23,11 @@ public class EventList : ObservableCollection<Event>
     public void RemoveAt(int index, bool recursive) => RemoveInternal(this[index], index, recursive);
     private void RemoveInternal(Event item, int index, bool _)
     {
-        RemoveAt(index);
+        List<int> indices = new();
+        item.GetChildIndices(indices);
 
-        List<int> children = item.GetChildIndices();
-        foreach (var child in children.Distinct().OrderDescending()) {
+        RemoveAt(index);
+        foreach (var child in indices.Distinct().OrderDescending()) {
             RemoveAt(child);
         }
     }
@@ -35,7 +36,7 @@ public class EventList : ObservableCollection<Event>
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null) {
             foreach (var item in e.NewItems) {
-                ((BfevListItem)item)._parent = _parent;
+                ((Event)item)._parent = _parent;
             }
         }
 

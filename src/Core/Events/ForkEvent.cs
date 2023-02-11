@@ -64,21 +64,18 @@ public class ForkEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override List<int> GetChildIndices()
+    internal override void GetChildIndices(List<int> indices)
     {
-        List<int> indices = new();
         if (JoinEventIndex > -1) {
             indices.Add(JoinEventIndex);
-            indices.AddRange(_parent!.Events[JoinEventIndex].GetChildIndices());
+            _parent!.Events[JoinEventIndex].GetChildIndices(indices);
         }
 
         foreach (var index in ForkEventIndicies) {
             if (index > -1) {
                 indices.Add(index);
-                indices.AddRange(_parent!.Events[index].GetChildIndices());
+                _parent!.Events[index].GetChildIndices(indices);
             }
         }
-
-        return indices;
     }
 }
