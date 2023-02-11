@@ -34,7 +34,7 @@ public class EventList : ObservableCollection<Event>
             RemoveAt(child);
         }
 
-        RemoveAt(index-indices.Where(x => x <= index).Count());
+        RemoveAt(index - indices.Where(x => x <= index).Count());
     }
 
     private void EventList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

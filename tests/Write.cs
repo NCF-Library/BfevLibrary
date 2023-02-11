@@ -11,13 +11,9 @@ namespace Tests
         public void WriteEvFl()
         {
             BfevFile evfl = BfevFile.FromBinary(".\\Data\\NPC_artist_000.bfevfl");
-            evfl.Flowchart!.Events.Add(new ActionEvent("Event56"));
-            evfl.Flowchart!.Events.RemoveAt(27);
             evfl.ToBinary(".\\Data\\WRITE_NPC_artist_000.bfevfl");
 
             BfevFile reEvfl = BfevFile.FromBinary(".\\Data\\WRITE_NPC_artist_000.bfevfl");
-
-
             string serialized = reEvfl.ToJson(format: true);
             Debug.WriteLine(serialized);
             File.WriteAllText(".\\Data\\WRITE_NPC_artist_000.json", serialized);
