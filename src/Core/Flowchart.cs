@@ -104,4 +104,10 @@ public class Flowchart : IBfevDataBlock
         writer.WriteReserved("EntryPointArrayDataBlock", alignment: 8);
         writer.Align(8);
     }
+
+    public void RemoveEntryPoint(string key)
+    {
+        Events.RemoveAt(EntryPoints[key].EventIndex, recursive: true);
+        EntryPoints.Remove(key);
+    }
 }
