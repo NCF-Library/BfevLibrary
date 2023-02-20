@@ -34,6 +34,19 @@ public class EventList : ObservableCollection<Event>
         }
     }
 
+    internal void ResetEntryPointIndices()
+    {
+        foreach ((_, var entryPoint) in _parent.EntryPoints) {
+            entryPoint.SubFlowEventIndices.Clear();
+        }
+
+        for (short i = 0; i < Count; i++) {
+            if (Items[i] is SubflowEvent subflow && _parent.EntryPoints.TryGetValue(subflow.EntryPointName, out EntryPoint? entryPoint)) {
+                entryPoint.SubFlowEventIndices.Add(i);
+            }
+        }
+    }
+
     private void EventList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null) {
