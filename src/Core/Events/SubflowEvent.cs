@@ -1,5 +1,6 @@
 ﻿using BfevLibrary.Common;
 using BfevLibrary.Parsers;
+using System;
 using System.Text.Json.Serialization;
 
 namespace BfevLibrary.Core;
@@ -57,11 +58,16 @@ public class SubflowEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override void GetChildIndices(List<int> indices)
+    internal override bool GetIndices(List<int> indices, int index)
     {
-        if (NextEventIndex > -1) {
-            indices.Add(NextEventIndex);
-            _parent!.Events[NextEventIndex].GetChildIndices(indices);
+        if (!base.GetIndices(indices, index)) {
+            return false;
         }
+
+        if (NextEventIndex > -1) {
+            _parent!.Events[NextEventIndex].GetIndices(indices, NextEventIndex);
+        }
+
+        return true;
     }
 }

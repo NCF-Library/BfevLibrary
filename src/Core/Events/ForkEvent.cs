@@ -1,5 +1,6 @@
 ﻿using BfevLibrary.Common;
 using BfevLibrary.Parsers;
+using System;
 using System.Text.Json.Serialization;
 
 namespace BfevLibrary.Core;
@@ -64,18 +65,22 @@ public class ForkEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override void GetChildIndices(List<int> indices)
+    internal override bool GetIndices(List<int> indices, int index)
     {
-        if (JoinEventIndex > -1) {
-            indices.Add(JoinEventIndex);
-            _parent!.Events[JoinEventIndex].GetChildIndices(indices);
+        if (!base.GetIndices(indices, index)) {
+            return false;
         }
 
-        foreach (var index in ForkEventIndicies) {
-            if (index > -1) {
-                indices.Add(index);
-                _parent!.Events[index].GetChildIndices(indices);
+        if (JoinEventIndex > -1) {
+            _parent!.Events[JoinEventIndex].GetIndices(indices, JoinEventIndex);
+        }
+
+        foreach (var i in ForkEventIndicies) {
+            if (i > -1) {
+                _parent!.Events[i].GetIndices(indices, i);
             }
         }
+
+        return true;
     }
 }
