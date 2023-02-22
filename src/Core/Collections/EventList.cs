@@ -34,15 +34,19 @@ public class EventList : ObservableCollection<Event>
         }
     }
 
-    internal void ResetEntryPointIndices()
+    internal void RemapEntryPointSubflowIndices()
     {
         foreach ((_, var entryPoint) in _parent.EntryPoints) {
             entryPoint.SubFlowEventIndices.Clear();
-        }
 
-        for (short i = 0; i < Count; i++) {
-            if (Items[i] is SubflowEvent subflow && _parent.EntryPoints.TryGetValue(subflow.EntryPointName, out EntryPoint? entryPoint)) {
-                entryPoint.SubFlowEventIndices.Add(i);
+            List<int> indices = new();
+            Event @event = Items[entryPoint.EventIndex];
+            @event.GetIndices(indices, entryPoint.EventIndex);
+
+            foreach (var index in indices) {
+                if (Items[index] is SubflowEvent) {
+                    entryPoint.SubFlowEventIndices.Add((short)index);
+                }
             }
         }
     }

@@ -104,7 +104,7 @@ public class Flowchart : IBfevDataBlock
         writer.Align(8);
 
         insertEntryPointsPtr();
-        Events.ResetEntryPointIndices();
+        Events.RemapEntryPointSubflowIndices();
         writer.WriteObjects(EntryPoints.Values);
 
         writer.WriteReserved("EventArrayDataBlock", alignment: 8);
