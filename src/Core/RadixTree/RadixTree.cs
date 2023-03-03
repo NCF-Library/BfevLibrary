@@ -3,9 +3,9 @@ using BfevLibrary.Parsers;
 
 namespace BfevLibrary.Core;
 
-public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
+public class RadixTree<T> : SortedList<string, T>, IBfevDataBlock
 {
-    internal string[] _staticKeys = Array.Empty<string>();
+    internal string[]? _staticKeys;
 
     public RadixTree() { }
     public RadixTree(BfevReader reader, T[]? array = null)
@@ -19,9 +19,9 @@ public class RadixTree<T> : Dictionary<string, T>, IBfevDataBlock
 
     public void LinkToArray(T[] array)
     {
-        if (array.Length != _staticKeys.Length) {
+        if (array.Length != _staticKeys?.Length) {
             throw new Exception($"Could not link {typeof(T).Name}[{array.Length}] to RadixTree<{typeof(T).Name}> because the array lengths did not match.",
-                new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {_staticKeys.Length}.")
+                new InvalidDataException($"Could not fit an array with length of '{array.Length}' into {_staticKeys?.Length}.")
             );
         }
 

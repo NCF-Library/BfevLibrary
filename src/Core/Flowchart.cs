@@ -125,5 +125,21 @@ public class Flowchart : IBfevDataBlock
         int index = EntryPoints.IndexOfKey(key);
         Events.RemoveInternal(Events[EntryPoints[key].EventIndex], EntryPoints[key].EventIndex, true, ignoreIndices);
         EntryPoints.Remove(key);
+
+        // Make sure no actors are looking
+        // for the removed entry point
+        foreach (var actor in Actors) {
+            // We could remove the actor, but
+            // I don't know enough about how
+            // these are used to be sure it won't
+            // be needed without the EntryPoint
+            if (actor.EntryPointIndex == index) {
+                actor.EntryPointIndex = -1;
+            }
+
+            if (actor.EntryPointIndex > index) {
+                actor.EntryPointIndex--;
+            }
+        }
     }
 }
