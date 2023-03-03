@@ -25,12 +25,13 @@ public class EventList : ObservableCollection<Event>
 
     public void Remove(Event item, bool recursive) => RemoveInternal(item, IndexOf(item), recursive);
     public void RemoveAt(int index, bool recursive) => RemoveInternal(this[index], index, recursive);
-    private void RemoveInternal(Event item, int index, bool _)
+    internal void RemoveInternal(Event item, int index, bool _, List<int>? ignoreIndices = null)
     {
-        List<int> cache = new();
-        item.GetIndices(cache, index);
+        List<int> indices = new();
+        item.GetIndices(indices, index, ignoreIndices);
 
-        foreach (var child in cache.Distinct().OrderDescending()) {
+        List<int> tmp = indices.Distinct().OrderDescending().ToList();
+        foreach (var child in tmp) {
             RemoveAt(child);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using BfevLibrary.Common;
 using BfevLibrary.Core.Collections;
+using BfevLibrary.Core.Exceptions;
 using BfevLibrary.Parsers;
 
 namespace BfevLibrary.Core;
@@ -108,7 +109,21 @@ public class Flowchart : IBfevDataBlock
 
     public void RemoveEntryPoint(string key)
     {
-        Events.RemoveAt(EntryPoints[key].EventIndex, recursive: true);
+        if (!EntryPoints.TryGetValue(key, out EntryPoint? entryPoint)) {
+            throw new BfevException($"Could not find the EntryPoint '{key}' in the Flowchart '{Name}'");
+        }
+
+        // Get all the indices from other EntryPoints to
+        // avoid deleting a cross-references event tree
+        List<int> ignoreIndices = new();
+        foreach ((_, var value) in EntryPoints.Where(x => x.Key != key)) {
+            Events[value.EventIndex].GetIndices(ignoreIndices, value.EventIndex);
+        }
+
+        // Stash the old index and recursively
+        // remove the EntryPoint
+        int index = EntryPoints.IndexOfKey(key);
+        Events.RemoveInternal(Events[EntryPoints[key].EventIndex], EntryPoints[key].EventIndex, true, ignoreIndices);
         EntryPoints.Remove(key);
     }
 }

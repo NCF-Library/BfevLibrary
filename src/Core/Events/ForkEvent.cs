@@ -65,14 +65,14 @@ public class ForkEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override bool GetIndices(List<int> indices, int index)
+    internal override bool GetIndices(List<int> indices, int index, List<int>? ignoreIndices = null)
     {
-        if (!base.GetIndices(indices, index)) {
+        if (!base.GetIndices(indices, index, ignoreIndices)) {
             return false;
         }
 
         if (JoinEventIndex > -1) {
-            _parent!.Events[JoinEventIndex].GetIndices(indices, JoinEventIndex);
+            _parent!.Events[JoinEventIndex].GetIndices(indices, JoinEventIndex, ignoreIndices);
         }
 
         foreach (var i in ForkEventIndicies) {
