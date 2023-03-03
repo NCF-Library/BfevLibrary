@@ -23,6 +23,16 @@ public class EventList : ObservableCollection<Event>
     [JsonConstructor]
     public EventList() => CollectionChanged += EventList_CollectionChanged;
 
+    /// <summary>
+    /// Renames every event to match there index
+    /// </summary>
+    public void RemapEventNames()
+    {
+        for (int i = 0; i < Count; i++) {
+            this[i].Name = "Event" + i;
+        }
+    }
+
     public void Remove(Event item, bool recursive) => RemoveInternal(item, IndexOf(item), recursive);
     public void RemoveAt(int index, bool recursive) => RemoveInternal(this[index], index, recursive);
     internal void RemoveInternal(Event item, int index, bool _, List<int>? ignoreIndices = null)
