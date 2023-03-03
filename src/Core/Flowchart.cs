@@ -6,13 +6,6 @@ namespace BfevLibrary.Core;
 
 public class Flowchart : IBfevDataBlock
 {
-    /// <summary>
-    /// Tracked indices to remove from the flowchart.
-    /// This needs to be exposed to the Events to
-    /// avoid infinite recursive searching.
-    /// </summary>
-    internal List<int> CachedIndices = new();
-
     public const string Magic = "EVFL";
 
     public string Name { get; set; }
