@@ -117,7 +117,7 @@ public class Flowchart : IBfevDataBlock
     public void RemoveEntryPoint(string key, bool recursive = true)
     {
         if (!EntryPoints.TryGetValue(key, out EntryPoint? entryPoint)) {
-            throw new BfevException($"Could not find an EntryPoint with a matching key in the Flowchart (Key: {key}, Flowchart: {Name})");
+            throw new BfevException($"Could not find an EntryPoint with the key '{key}'", new KeyNotFoundException());
         }
 
         if (recursive) {
