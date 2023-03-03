@@ -107,23 +107,33 @@ public class Flowchart : IBfevDataBlock
         writer.Align(8);
     }
 
-    public void RemoveEntryPoint(string key)
+    /// <summary>
+    /// <para>Removes an <see cref="EntryPoint"/> with a matching <paramref name="key"/> in the <see cref="Flowchart"/></para>
+    /// <para></para>
+    /// </summary>
+    /// <param name="key">The name of the EntryPoint to delete</param>
+    /// <param name="recursive">Recursively delete events used by the EntryPoint</param>
+    /// <exception cref="BfevException" />
+    public void RemoveEntryPoint(string key, bool recursive)
     {
         if (!EntryPoints.TryGetValue(key, out EntryPoint? entryPoint)) {
-            throw new BfevException($"Could not find the EntryPoint '{key}' in the Flowchart '{Name}'");
+            throw new BfevException($"Could not find an EntryPoint with a matching key in the Flowchart (Key: {key}, Flowchart: {Name})");
         }
 
-        // Get all the indices from other EntryPoints to
-        // avoid deleting a cross-references event tree
-        List<int> ignoreIndices = new();
-        foreach ((_, var value) in EntryPoints.Where(x => x.Key != key)) {
-            Events[value.EventIndex].GetIndices(ignoreIndices, value.EventIndex);
+        if (recursive) {
+            // Get all the indices from other EntryPoints to
+            // avoid deleting a cross-references event tree
+            List<int> ignoreIndices = new();
+            foreach ((_, var value) in EntryPoints.Where(x => x.Key != key)) {
+                Events[value.EventIndex].GetIndices(ignoreIndices, value.EventIndex);
+            }
+
+            Events.RemoveInternal(Events[EntryPoints[key].EventIndex], EntryPoints[key].EventIndex, recursive, ignoreIndices);
         }
 
         // Stash the old index and recursively
         // remove the EntryPoint
         int index = EntryPoints.IndexOfKey(key);
-        Events.RemoveInternal(Events[EntryPoints[key].EventIndex], EntryPoints[key].EventIndex, true, ignoreIndices);
         EntryPoints.Remove(key);
 
         // Make sure no actors are looking
