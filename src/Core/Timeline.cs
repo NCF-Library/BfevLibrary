@@ -15,7 +15,7 @@ public class Timeline : IBfevDataBlock
     public List<Trigger> Triggers { get; set; }
     public List<SubTimeline> SubTimelines { get; set; }
     public List<Cut> Cuts { get; set; }
-    public Container Parameters { get; set; }
+    public Container? Parameters { get; set; }
 
     public Timeline()
     {
@@ -54,7 +54,11 @@ public class Timeline : IBfevDataBlock
         reader.Align(8);
         SubTimelines = reader.ReadObjectsPtr(new SubTimeline[subTimelineCount], () => new(reader)).ToList();
         Cuts = reader.ReadObjectsPtr(new Cut[cutCount], () => new(reader)).ToList();
-        Parameters = reader.TemporarySeek<Container>(reader.ReadInt64(), SeekOrigin.Begin, () => new(reader));
+
+        long containerOffset = reader.ReadInt64();
+        Parameters = containerOffset > 0
+            ? reader.TemporarySeek<Container>(containerOffset, SeekOrigin.Begin, () => new(reader))
+            : null;
 
         return this;
     }
@@ -68,7 +72,7 @@ public class Timeline : IBfevDataBlock
         }
 
         long? paramOffset = null;
-        if (Parameters.Count > 0) {
+        if (Parameters?.Count > 0) {
             paramOffset = writer.BaseStream.Position;
             Parameters.Write(writer);
         }
@@ -95,10 +99,8 @@ public class Timeline : IBfevDataBlock
         Action insertSubTimelinesPtr = writer.ReservePtrIf(SubTimelines.Count > 0, register: true);
         Action insertCutsPtr = writer.ReservePtrIf(Cuts.Count > 0, register: true);
 
-        if (paramOffset != null) {
-            writer.RegisterPtr();
-            writer.Write((long)paramOffset);
-        }
+        writer.RegisterPtr();
+        writer.Write(paramOffset ?? 0);
 
         // Nintendo is weird sometimes
         insertActorsPtr();
