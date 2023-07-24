@@ -1,7 +1,14 @@
 ﻿using BfevLibrary;
 
-BfevFile evfl = BfevFile.FromBinary(@"D:\Bin\AutoRRG\ShopForRandomGoal.bfevfl");
-evfl.Flowchart!.RemoveEntryPoint("Yorozuya_Kaitori");
+string output = "D:\\Bin\\Totk\\Bfev";
 
-byte[] data = evfl.ToBinary();
-File.WriteAllBytes("D:\\Bin\\AutoRRG\\new.bfevfl", data);
+foreach (var file in Directory.GetFiles("D:\\Bin\\Totk\\EventFlow")) {
+    string filename = Path.GetFileName(file);
+    filename = Path.ChangeExtension(filename, ".json");
+    string outFile = Path.Combine(output, filename);
+
+    BfevFile bfev = BfevFile.FromBinary(file);
+    File.WriteAllText(outFile, bfev.ToJson());
+
+    Console.WriteLine(filename);
+}
