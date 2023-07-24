@@ -20,9 +20,9 @@ public class Actor : IBfevDataBlock
     /// </summary>
     public byte CutNumber { get; set; }
 
-    public List<string> Actions { get; set; }
-    public List<string> Queries { get; set; }
-    public Container? Parameters { get; set; }
+    public List<string> Actions { get; set; } = new();
+    public List<string> Queries { get; set; } = new();
+    public Container Parameters { get; set; } = new();
 
     public Actor() { }
     public Actor(BfevReader reader)
@@ -38,7 +38,7 @@ public class Actor : IBfevDataBlock
 
         long actionsOffset = reader.ReadInt64();
         long queriesOffset = reader.ReadInt64();
-        Parameters = reader.ReadObjectPtr<Container>(() => new(reader));
+        Parameters = reader.ReadObjectPtr<Container>(() => new(reader)) ?? new();
         ushort actionCount = reader.ReadUInt16();
         ushort queryCount = reader.ReadUInt16();
 
