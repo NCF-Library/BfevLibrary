@@ -70,7 +70,7 @@ public class Actor : IBfevDataBlock
 
         CheckAction(ref insertActionsPtr, Actions.Count > 0, register: true);
         CheckAction(ref insertQueriesPtr, Queries.Count > 0, register: true);
-        CheckAction(ref insertParamsPtr, Parameters?.CanWrite() ?? false, register: false);
+        CheckAction(ref insertParamsPtr, true, register: false);
 
         writer.Write((ushort)Actions.Count);
         writer.Write((ushort)Queries.Count);
@@ -92,23 +92,21 @@ public class Actor : IBfevDataBlock
 
     public void WriteData(BfevWriter writer)
     {
-        if (Parameters?.CanWrite() ?? false) {
-            writer.Align(8);
+        writer.Align(8);
 
-            if (insertParamsPtr == null) {
-                long pos = writer.BaseStream.Position;
-                insertParamsPtr = () => {
-                    writer.RegisterPtr();
-                    writer.Write(pos);
-                };
-            }
-            else {
-                insertParamsPtr();
-                insertParamsPtr = null;
-            }
-
-            Parameters!.Write(writer);
+        if (insertParamsPtr == null) {
+            long pos = writer.BaseStream.Position;
+            insertParamsPtr = () => {
+                writer.RegisterPtr();
+                writer.Write(pos);
+            };
         }
+        else {
+            insertParamsPtr();
+            insertParamsPtr = null;
+        }
+
+        Parameters.Write(writer);
 
         if (Actions.Count > 0) {
             writer.Align(8);
