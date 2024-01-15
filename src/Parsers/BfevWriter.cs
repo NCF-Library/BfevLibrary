@@ -43,11 +43,11 @@ public class BfevWriter : BinaryWriter
         };
 
         if (key != null) {
-            if (!ReservedBlocks.ContainsKey(key)) {
-                ReservedBlocks.Add(key, new());
+            if (!ReservedBlocks.TryGetValue(key, out List<Action>? value)) {
+                ReservedBlocks[key] = value = new();
             }
 
-            ReservedBlocks[key].Add(insert);
+            value.Add(insert);
         }
 
         write(0L);
@@ -96,11 +96,11 @@ public class BfevWriter : BinaryWriter
     /// <param name="writers"></param>
     public void ReserveBlockWriter(string key, Action blockWriter)
     {
-        if (!ReservedBlocks.ContainsKey(key)) {
-            ReservedBlocks.Add(key, new());
+        if (!ReservedBlocks.TryGetValue(key, out List<Action>? value)) {
+            ReservedBlocks[key] = value = new();
         }
 
-        ReservedBlocks[key].Add(blockWriter);
+        value.Add(blockWriter);
     }
 
     public void WriteNullPtr(bool register = false)
@@ -128,8 +128,8 @@ public class BfevWriter : BinaryWriter
     /// <param name="key"></param>
     public bool WriteReserved(string key, bool remove = false, int? alignment = null)
     {
-        if (ReservedBlocks.ContainsKey(key)) {
-            foreach (var action in ReservedBlocks[key]) {
+        if (ReservedBlocks.TryGetValue(key, out List<Action>? value)) {
+            foreach (var action in value) {
                 if (alignment != null) {
                     Align((int)alignment);
                 }
@@ -163,8 +163,8 @@ public class BfevWriter : BinaryWriter
 
     public void WriteStringPtr(string str)
     {
-        if (!Strings.ContainsKey(str)) {
-            Strings.Add(str, new());
+        if (!Strings.TryGetValue(str, out List<Action>? value)) {
+            Strings[str] = value = new();
         }
 
         Action<long> insert;
@@ -181,7 +181,7 @@ public class BfevWriter : BinaryWriter
             Write(0L);
         }
 
-        Strings[str].Add(() => {
+        value.Add(() => {
             long pos = BaseStream.Position;
             TemporarySeek(offset, SeekOrigin.Begin, () => insert(pos));
         });
