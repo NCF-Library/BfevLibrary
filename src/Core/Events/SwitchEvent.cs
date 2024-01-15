@@ -103,14 +103,14 @@ public class SwitchEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override bool GetIndices(List<int> indices, int index, List<int>? ignoreIndices = null)
+    internal override bool GetIndices(List<int> indices, int index, int joinIndex, List<int>? ignoreIndices = null)
     {
-        if (!base.GetIndices(indices, index, ignoreIndices)) {
+        if (!base.GetIndices(indices, index, joinIndex, ignoreIndices)) {
             return false;
         }
 
         foreach (var switchCase in SwitchCases) {
-            _parent!.Events[switchCase.EventIndex].GetIndices(indices, switchCase.EventIndex, ignoreIndices);
+            _parent!.Events[switchCase.EventIndex].GetIndices(indices, switchCase.EventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

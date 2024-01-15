@@ -42,14 +42,14 @@ public class JoinEvent : Event, IBfevDataBlock
         }
     }
 
-    internal override bool GetIndices(List<int> indices, int index, List<int>? ignoreIndices = null)
+    internal override bool GetIndices(List<int> indices, int index, int joinIndex, List<int>? ignoreIndices = null)
     {
-        if (!base.GetIndices(indices, index, ignoreIndices)) {
+        if (!base.GetIndices(indices, index, joinIndex, ignoreIndices)) {
             return false;
         }
 
-        if (NextEventIndex > -1) {
-            _parent!.Events[NextEventIndex].GetIndices(indices, NextEventIndex, ignoreIndices);
+        if (NextEventIndex != joinIndex && NextEventIndex > -1) {
+            _parent!.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

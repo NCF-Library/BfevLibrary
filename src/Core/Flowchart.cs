@@ -125,7 +125,7 @@ public class Flowchart : IBfevDataBlock
             // avoid deleting a cross-references event tree
             List<int> ignoreIndices = new();
             foreach ((_, var value) in EntryPoints.Where(x => x.Key != key)) {
-                Events[value.EventIndex].GetIndices(ignoreIndices, value.EventIndex);
+                Events[value.EventIndex].GetIndices(ignoreIndices, value.EventIndex, -1);
             }
 
             Events.RemoveInternal(Events[EntryPoints[key].EventIndex], EntryPoints[key].EventIndex, recursive, ignoreIndices);

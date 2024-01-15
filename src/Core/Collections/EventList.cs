@@ -38,7 +38,7 @@ public class EventList : ObservableCollection<Event>
     internal void RemoveInternal(Event item, int index, bool _, List<int>? ignoreIndices = null)
     {
         List<int> indices = new();
-        item.GetIndices(indices, index, ignoreIndices);
+        item.GetIndices(indices, index, -1, ignoreIndices);
 
         List<int> tmp = indices.Distinct().OrderDescending().ToList();
         foreach (var child in tmp) {
@@ -53,7 +53,7 @@ public class EventList : ObservableCollection<Event>
 
             List<int> indices = new();
             Event @event = Items[entryPoint.EventIndex];
-            @event.GetIndices(indices, entryPoint.EventIndex);
+            @event.GetIndices(indices, entryPoint.EventIndex, -1);
 
             foreach (var index in indices) {
                 if (Items[index] is SubflowEvent) {
