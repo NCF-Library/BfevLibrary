@@ -18,7 +18,7 @@ public class ActionEvent : Event, IBfevDataBlock
     [JsonIgnore]
     public Actor? Actor => ActorIndex > -1 ? _parent?.Actors[ActorIndex] : null;
     public string? ActorName => Actor?.Name;
-    public string? ActorAction => ActorActionIndex < -1 ? Actor?.Actions[ActorActionIndex] : null;
+    public string? ActorAction => ActorActionIndex > -1 ? Actor?.Actions[ActorActionIndex] : null;
 
     [JsonConstructor]
     public ActionEvent(string name) : base(name, EventType.Action)
