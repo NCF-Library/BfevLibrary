@@ -67,7 +67,7 @@ public class EventList : ObservableCollection<Event>
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null) {
             foreach (var item in e.NewItems) {
-                ((Event)item)._parent = _parent;
+                ((Event)item).Flowchart = _parent;
             }
         }
 

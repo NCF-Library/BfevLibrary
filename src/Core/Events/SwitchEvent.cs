@@ -25,7 +25,7 @@ public class SwitchEvent : Event, IBfevDataBlock
     public List<SwitchCase> SwitchCases { get; set; }
 
     [JsonIgnore]
-    public Actor? Actor => ActorIndex > -1 ? _parent?.Actors[ActorIndex] : null;
+    public Actor? Actor => ActorIndex > -1 ? Flowchart?.Actors[ActorIndex] : null;
     public string? ActorName => Actor?.Name;
     public string? ActorQuery => ActorQueryIndex > -1 ? Actor?.Queries[ActorQueryIndex] : null;
 
@@ -110,7 +110,7 @@ public class SwitchEvent : Event, IBfevDataBlock
         }
 
         foreach (var switchCase in SwitchCases) {
-            _parent!.Events[switchCase.EventIndex].GetIndices(indices, switchCase.EventIndex, joinIndex, ignoreIndices);
+            Flowchart?.Events[switchCase.EventIndex].GetIndices(indices, switchCase.EventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

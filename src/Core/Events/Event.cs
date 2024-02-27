@@ -12,7 +12,7 @@ public enum EventType
 [JsonConverter(typeof(EventConverter))]
 public abstract class Event : IBfevDataBlock
 {
-    internal Flowchart? _parent;
+    public Flowchart? Flowchart { get; internal set; }
 
     public string Name { get; set; }
 
@@ -38,7 +38,7 @@ public abstract class Event : IBfevDataBlock
             _ => throw new NotImplementedException()
         };
 
-        result._parent = parent;
+        result.Flowchart = parent;
         return result;
     }
 

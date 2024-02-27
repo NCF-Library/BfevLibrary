@@ -12,11 +12,11 @@ public class ActionEvent : Event, IBfevDataBlock
     public Container? Parameters { get; set; }
 
     [JsonIgnore]
-    public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
+    public Event? NextEvent => NextEventIndex > -1 ? Flowchart?.Events[NextEventIndex] : null;
     public string? NextEventName => NextEvent?.Name;
 
     [JsonIgnore]
-    public Actor? Actor => ActorIndex > -1 ? _parent?.Actors[ActorIndex] : null;
+    public Actor? Actor => ActorIndex > -1 ? Flowchart?.Actors[ActorIndex] : null;
     public string? ActorName => Actor?.Name;
     public string? ActorAction => ActorActionIndex > -1 ? Actor?.Actions[ActorActionIndex] : null;
 
@@ -80,7 +80,7 @@ public class ActionEvent : Event, IBfevDataBlock
         }
 
         if (NextEventIndex != joinIndex && NextEventIndex > -1) {
-            _parent!.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
+            Flowchart?.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

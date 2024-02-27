@@ -73,12 +73,12 @@ public class ForkEvent : Event, IBfevDataBlock
 
         foreach (var i in ForkEventIndicies) {
             if (i > -1) {
-                _parent!.Events[i].GetIndices(indices, i, JoinEventIndex);
+                Flowchart?.Events[i].GetIndices(indices, i, JoinEventIndex);
             }
         }
 
         if (JoinEventIndex > -1) {
-            _parent!.Events[JoinEventIndex].GetIndices(indices, JoinEventIndex, joinIndex, ignoreIndices);
+            Flowchart?.Events[JoinEventIndex].GetIndices(indices, JoinEventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

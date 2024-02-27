@@ -9,7 +9,7 @@ public class JoinEvent : Event, IBfevDataBlock
     public short NextEventIndex { get; set; } = -1;
 
     [JsonIgnore]
-    public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
+    public Event? NextEvent => NextEventIndex > -1 ? Flowchart?.Events[NextEventIndex] : null;
     public string? NextEventName => NextEvent?.Name;
 
     [JsonConstructor]
@@ -49,7 +49,7 @@ public class JoinEvent : Event, IBfevDataBlock
         }
 
         if (NextEventIndex != joinIndex && NextEventIndex > -1) {
-            _parent!.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
+            Flowchart?.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

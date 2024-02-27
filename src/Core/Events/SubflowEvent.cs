@@ -13,7 +13,7 @@ public class SubflowEvent : Event, IBfevDataBlock
     public string EntryPointName { get; set; } = string.Empty;
 
     [JsonIgnore]
-    public Event? NextEvent => NextEventIndex > -1 ? _parent?.Events[NextEventIndex] : null;
+    public Event? NextEvent => NextEventIndex > -1 ? Flowchart?.Events[NextEventIndex] : null;
     public string? NextEventName => NextEvent?.Name;
 
     [JsonConstructor]
@@ -65,7 +65,7 @@ public class SubflowEvent : Event, IBfevDataBlock
         }
 
         if (NextEventIndex != joinIndex && NextEventIndex > -1) {
-            _parent!.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
+            Flowchart?.Events[NextEventIndex].GetIndices(indices, NextEventIndex, joinIndex, ignoreIndices);
         }
 
         return true;

@@ -40,7 +40,7 @@ public class BfevFile : BfevBase
             flowchart.Actors._parent = flowchart;
             flowchart.Events._parent = flowchart;
             foreach (var @event in flowchart.Events) {
-                @event._parent = flowchart;
+                @event.Flowchart = flowchart;
             }
         }
 
