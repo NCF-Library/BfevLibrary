@@ -12,6 +12,7 @@ public enum EventType
 [JsonConverter(typeof(EventConverter))]
 public abstract class Event : IBfevDataBlock
 {
+    [JsonIgnore]
     public Flowchart? Flowchart { get; internal set; }
 
     public string Name { get; set; }
